@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CYBERNETIC LABORATORY · Киборг технологиясы</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ==================== BOOT SCREEN ==================== -->
+<div id="bootScreen">
+  <div class="boot-grid"></div>
+
+  <div class="boot-corner top-left">
+    <span class="corner-dot"></span>
+    <span>CYBERNETIC LAB · v2.048</span>
+  </div>
+
+  <div class="boot-corner top-right">
+    <span id="bootTime">00:00:00</span>
+  </div>
+
+  <button class="skip-btn" id="skipBtn" title="Өткізіп жіберу">SKIP ▶</button>
+
+  <div class="boot-center">
+    <div class="scanner-wrap">
+      <svg class="body-silhouette" viewBox="0 0 200 400" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="100" cy="50" rx="32" ry="38" class="silhouette-fill"/>
+        <rect x="90" y="82" width="20" height="15" class="silhouette-fill"/>
+        <path d="M 60 100 Q 55 130 50 180 L 55 200 L 70 200 L 72 160 L 75 260 L 70 380 L 88 380 L 95 260 L 100 250 L 105 260 L 112 380 L 130 380 L 125 260 L 128 160 L 130 200 L 145 200 L 150 180 Q 145 130 140 100 Q 120 92 100 92 Q 80 92 60 100 Z" class="silhouette-fill"/>
+        <rect x="40" y="0" width="120" height="3" fill="#00e5ff" class="scan-line" id="scanLine"/>
+      </svg>
+      <div class="scanner-glow"></div>
+    </div>
+
+    <div class="boot-logs" id="bootLogs">
+      <div class="boot-log" data-delay="400">
+        <span class="log-prompt">›</span>
+        <span class="log-text">SYSTEM INITIALIZING...</span>
+      </div>
+      <div class="boot-log" data-delay="1200">
+        <span class="log-prompt">›</span>
+        <span class="log-text">BIOMETRIC SCAN: <span class="log-ok">COMPLETE</span></span>
+      </div>
+      <div class="boot-log" data-delay="2000">
+        <span class="log-prompt">›</span>
+        <span class="log-text">NEURAL NETWORK: <span class="log-ok">ONLINE</span></span>
+      </div>
+      <div class="boot-log" data-delay="2800">
+        <span class="log-prompt">›</span>
+        <span class="log-text">CYBERNETIC LABORATORY: <span class="log-ok">READY</span></span>
+      </div>
+    </div>
+
+    <div class="boot-progress">
+      <div class="progress-header">
+        <span>LOADING</span>
+        <span id="progressPercent">0%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="boot-final" id="bootFinal">
+    <div class="researcher-badge">
+      <span class="badge-label">RESEARCHER</span>
+      <span class="badge-id" id="researcherId">#0000</span>
+    </div>
+
+    <div class="quote-block">
+      <div class="quote-mark">"</div>
+      <p class="quote-text">
+        Болашақ адамды өзгертпейді.<br>
+        <span class="quote-accent">Болашақ адамды қайта анықтайды.</span>
+      </p>
+      <div class="quote-author">— CYBERNETIC LABORATORY</div>
+    </div>
+
+    <div class="boot-actions">
+      <button class="action-btn primary" id="enterLabBtn">
+        <span class="btn-icon">⬢</span>
+        <span>ЗЕРТХАНАҒА КІРУ</span>
+      </button>
+      <button class="action-btn secondary" id="aboutProjectBtn">
+        <span class="btn-icon">◈</span>
+        <span>ЖОБА ТУРАЛЫ</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="heartbeat-indicator" id="heartbeat">
+    <div class="heart-icon">♥</div>
+    <div class="heart-line"></div>
+  </div>
+</div>
+
+<!-- ==================== ЗЕРТХАНА ==================== -->
+<div id="laboratory" class="hidden">
+  
+  <!-- Sidebar навигация -->
+  <aside class="lab-sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">⬢</div>
+      <div class="brand-text">
+        <div class="brand-name">CYBERNETIC</div>
+        <div class="brand-sub">LABORATORY</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <button class="side-link active" data-section="brain">
+        <span class="side-icon">🧠</span>
+        <span class="side-label">Ми моделі</span>
+      </button>
+      <button class="side-link" data-section="human">
+        <span class="side-icon">🧑</span>
+        <span class="side-label">Адам моделі</span>
+      </button>
+      <button class="side-link" data-section="implants">
+        <span class="side-icon">🔌</span>
+        <span class="side-label">Импланттар</span>
+      </button>
+      <button class="side-link" data-section="history">
+        <span class="side-icon">📅</span>
+        <span class="side-label">Тарих</span>
+      </button>
+      <button class="side-link" data-section="safety">
+        <span class="side-icon">🛡️</span>
+        <span class="side-label">Қауіпсіздік</span>
+      </button>
+      <button class="side-link" data-section="future">
+        <span class="side-icon">🔮</span>
+        <span class="side-label">Болашақ</span>
+      </button>
+      <button class="side-link" data-section="survey">
+        <span class="side-icon">📝</span>
+        <span class="side-label">Сауалнама</span>
+      </button>
+      <button class="side-link" data-section="authors">
+        <span class="side-icon">👥</span>
+        <span class="side-label">Авторлар</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <span class="user-label">RESEARCHER</span>
+        <span class="user-id" id="labUserId">#0000</span>
+      </div>
+      <div class="sidebar-status">
+        <span class="status-dot"></span>
+        <span>ЖҮЙЕ БЕЛСЕНДІ</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Негізгі контент -->
+  <main class="lab-main">
+    
+    <!-- Toolbar -->
+    <header class="lab-toolbar">
+      <div class="toolbar-left">
+        <h1 class="toolbar-title" id="toolbarTitle">МИ 3D МОДЕЛІ</h1>
+        <p class="toolbar-sub" id="toolbarSub">Интерактивті нейроанатомия</p>
+      </div>
+      <div class="toolbar-right">
+        <div class="toolbar-clock" id="labClock">00:00:00</div>
+      </div>
+    </header>
+
+    <!-- Section: МИ 3D -->
+    <section class="lab-section active" id="section-brain">
+      <div class="brain-wrapper">
+        <div class="brain-canvas-box">
+          <div id="brain3D"></div>
+          
+          <div class="brain-hud top-left">
+            <div class="hud-item">
+              <span class="hud-label">ЖАҒДАЙ</span>
+              <span class="hud-value live">● БЕЛСЕНДІ</span>
+            </div>
+            <div class="hud-item">
+              <span class="hud-label">ИМПУЛЬС</span>
+              <span class="hud-value" id="pulseValue">72 Hz</span>
+            </div>
+          </div>
+
+          <div class="brain-controls">
+            <button class="ctrl-btn" onclick="resetBrainView()" title="Қалпына келтіру">⟲</button>
+            <button class="ctrl-btn" onclick="toggleBrainRotate()" title="Айналдыру">▶</button>
+          </div>
+
+          <div class="brain-hint">
+            💡 Ми бөлігін басып, анықтама алыңыз
+          </div>
+        </div>
+
+        <div class="brain-info-panel" id="brainInfo">
+          <div class="info-placeholder">
+            <div class="info-placeholder-icon">🧠</div>
+            <h3>Ми бөлігін таңдаңыз</h3>
+            <p>Модельдегі кез келген бөлікті басып, оның қызметі туралы біліңіз</p>
+            <div class="brain-parts-list">
+              <button class="part-chip" onclick="selectBrainPart('frontal')">Фронталды</button>
+              <button class="part-chip" onclick="selectBrainPart('parietal')">Париеталды</button>
+              <button class="part-chip" onclick="selectBrainPart('temporal')">Темпоралды</button>
+              <button class="part-chip" onclick="selectBrainPart('occipital')">Оксипиталды</button>
+              <button class="part-chip" onclick="selectBrainPart('cerebellum')">Мишық</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: АДАМ МОДЕЛІ -->
+    <section class="lab-section" id="section-human">
+      <div class="human-wrapper">
+        <div class="human-canvas-box">
+          <div id="human3D"></div>
+          <div class="human-hint">💡 Мүшені басып, имплант туралы біліңіз</div>
+        </div>
+        <div class="human-info-panel" id="humanInfo">
+          <div class="info-placeholder">
+            <div class="info-placeholder-icon">🧑</div>
+            <h3>Мүшені таңдаңыз</h3>
+            <p>Адам денесіндегі сезім мүшелерін басып, олардың импланттары туралы біліңіз</p>
+            <div class="brain-parts-list">
+              <button class="part-chip" onclick="selectHumanPart('eye')">👁️ Көз</button>
+              <button class="part-chip" onclick="selectHumanPart('ear')">👂 Құлақ</button>
+              <button class="part-chip" onclick="selectHumanPart('hand')">✋ Қол</button>
+              <button class="part-chip" onclick="selectHumanPart('heart')">❤️ Жүрек</button>
+              <button class="part-chip" onclick="selectHumanPart('leg')">🦵 Аяқ</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: ИМПЛАНТТАР -->
+    <section class="lab-section" id="section-implants">
+      <div class="section-content">
+        <div class="implants-grid">
+          <div class="implant-card">
+            <div class="implant-icon">👁️</div>
+            <h3>Argus II</h3>
+            <p class="implant-cat">Жасанды көру жүйесі</p>
+            <p class="implant-desc">Соқыр адамдарға көру мүмкіндігін қайтаратын торлы қабық импланты. 60+ электрод арқылы миға сигнал жібереді.</p>
+            <div class="implant-meta">
+              <div><span>Бағасы:</span> $150,000</div>
+              <div><span>Жетістік:</span> 78%</div>
+            </div>
+          </div>
+
+          <div class="implant-card">
+            <div class="implant-icon">👂</div>
+            <h3>Cochlear Implant</h3>
+            <p class="implant-cat">Кохлеарлы имплант</p>
+            <p class="implant-desc">Есту қабілетін қалпына келтіреді. 1978 жылдан бері қолданылады, 1 млн+ адамға орнатылған.</p>
+            <div class="implant-meta">
+              <div><span>Бағасы:</span> $30,000</div>
+              <div><span>Жетістік:</span> 95%</div>
+            </div>
+          </div>
+
+          <div class="implant-card">
+            <div class="implant-icon">🦾</div>
+            <h3>Bionic Arm</h3>
+            <p class="implant-cat">Бионикалық қол</p>
+            <p class="implant-desc">Ми сигналдары арқылы басқарылатын протез. 26 градус еркіндік, 30 кг көтереді.</p>
+            <div class="implant-meta">
+              <div><span>Бағасы:</span> $100,000</div>
+              <div><span>Жетістік:</span> 88%</div>
+            </div>
+          </div>
+
+          <div class="implant-card">
+            <div class="implant-icon">🧠</div>
+            <h3>Neuralink N1</h3>
+            <p class="implant-cat">Ми чипі</p>
+            <p class="implant-desc">1024 электрод, ой арқылы құрылғы басқару. 2024 жылы адамға орнатылды.</p>
+            <div class="implant-meta">
+              <div><span>Бағасы:</span> $10,000+</div>
+              <div><span>Жетістік:</span> 65%</div>
+            </div>
+          </div>
+
+          <div class="implant-card">
+            <div class="implant-icon">❤️</div>
+            <h3>Artificial Heart</h3>
+            <p class="implant-cat">Жасанды жүрек</p>
+            <p class="implant-desc">Толық жасанды жүрек (SynCardia). Күн сайын 100,000 соғыс жасайды.</p>
+            <div class="implant-meta">
+              <div><span>Бағасы:</span> $150,000</div>
+              <div><span>Жетістік:</span> 70%</div>
+            </div>
+          </div>
+
+          <div class="implant-card">
+            <div class="implant-icon">🦿</div>
+            <h3>Bionic Leg</h3>
+            <p class="implant-cat">Бионикалық аяқ</p>
+            <p class="implant-desc">Қозғалысты қалпына келтіреді. Жүгіруге және секіруге мүмкіндік береді.</p>
+            <div class="implant-meta">
+              <div><span>Бағасы:</span> $80,000</div>
+              <div><span>Жетістік:</span> 90%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: ТАРИХ -->
+    <section class="lab-section" id="section-history">
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-year">1960</div>
+          <div class="timeline-content">
+            <h4>«Киборг» термині</h4>
+            <p>Манфред Клайнс пен Натан Клайн адам-машина жүйесі тұжырымдамасын ұсынды.</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-year">1978</div>
+          <div class="timeline-content">
+            <h4>Алғашқы кохлеарлы имплант</h4>
+            <p>Адамға алғаш рет есту қабілетін қалпына келтіретін имплант орнатылды.</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-year">2002</div>
+          <div class="timeline-content">
+            <h4>Argus II жасанды көз</h4>
+            <p>Соқыр адамдарға көру мүмкіндігін қайтаратын алғашқы жасанды көз.</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-year">2016</div>
+          <div class="timeline-content">
+            <h4>BCI технологиясы</h4>
+            <p>Ми белсенділігін нақты уақытта оқу мүмкіндігі пайда болды.</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-year">2024</div>
+          <div class="timeline-content">
+            <h4>Neuralink</h4>
+            <p>Адам миына имплант орнатылып, ой арқылы құрылғы басқару жүзеге асты.</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-year">2025+</div>
+          <div class="timeline-content">
+            <h4>Болашақ</h4>
+            <p>Толық сезім мүшелерін алмастыратын жасанды жүйелер мен бионикалық интеграция.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: ҚАУІПСІЗДІК -->
+    <section class="lab-section" id="section-safety">
+      <div class="section-content">
+        <div class="compare-grid">
+          <div class="compare-box compare-pros">
+            <h3>✅ Артықшылықтар</h3>
+            <ul>
+              <li>Жоғалған сезім мүшелерін қалпына келтіру</li>
+              <li>Мүгедектігі бар адамдардың өмір сапасын жақсарту</li>
+              <li>Адам қабілеттерін кеңейту (инфрақызыл көру)</li>
+              <li>Нейродегенеративті ауруларды емдеу</li>
+              <li>Ғылым мен медицинаның жаңа серпілісі</li>
+            </ul>
+          </div>
+          <div class="compare-box compare-cons">
+            <h3>⚠️ Шектеулер</h3>
+            <ul>
+              <li>Жоғары құны мен қолжетімсіздігі</li>
+              <li>Этикалық және діни мәселелер</li>
+              <li>Инфекция мен биологиялық үйлесімсіздік</li>
+              <li>Жеке деректердің қауіпсіздігі</li>
+              <li>Ұзақ мерзімді әсерлер белгісіз</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: БОЛАШАҚ -->
+    <section class="lab-section" id="section-future">
+      <div class="section-content">
+        <div class="future-grid">
+          <div class="future-card">
+            <div class="future-num">01</div>
+            <h3>2030</h3>
+            <p>Толық жасанды көз бен құлақ әмбебап болады</p>
+          </div>
+          <div class="future-card">
+            <div class="future-num">02</div>
+            <h3>2035</h3>
+            <p>Ми импланттары ауруларды емдейді</p>
+          </div>
+          <div class="future-card">
+            <div class="future-num">03</div>
+            <h3>2040</h3>
+            <p>Адам мен машина шекарасы жойылады</p>
+          </div>
+          <div class="future-card">
+            <div class="future-num">04</div>
+            <h3>2050</h3>
+            <p>Жасанды интеллект пен адам миы бірігеді</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: САУАЛНАМА -->
+    <section class="lab-section" id="section-survey">
+      <div class="section-content">
+        <div class="survey-box">
+          <h3>🤖 Киборг технологиясы туралы сауалнама</h3>
+
+          <div class="survey-question">
+            <p>1. Киборг технологиялары адамзатқа пайдалы деп ойлайсыз ба?</p>
+            <div class="survey-options">
+              <label class="survey-option"><input type="radio" name="q1" value="yes"> Иә, болашақ технологиясы</label>
+              <label class="survey-option"><input type="radio" name="q1" value="maybe"> Бәлкім, қауіпті жақтары бар</label>
+              <label class="survey-option"><input type="radio" name="q1" value="no"> Жоқ, табиғи жолды ұстану керек</label>
+            </div>
+          </div>
+
+          <div class="survey-question">
+            <p>2. Қай сезім мүшесін алмастыру маңызды?</p>
+            <div class="survey-options">
+              <label class="survey-option"><input type="radio" name="q2" value="eye"> Көру</label>
+              <label class="survey-option"><input type="radio" name="q2" value="ear"> Есту</label>
+              <label class="survey-option"><input type="radio" name="q2" value="touch"> Сипап сезу</label>
+              <label class="survey-option"><input type="radio" name="q2" value="all"> Барлығы маңызды</label>
+            </div>
+          </div>
+
+          <div class="survey-question">
+            <p>3. Өзіңізге нейроимплант орнатуға дайынсыз ба?</p>
+            <div class="survey-options">
+              <label class="survey-option"><input type="radio" name="q3" value="yes"> Иә, дайынмын</label>
+              <label class="survey-option"><input type="radio" name="q3" value="if"> Тек медициналық қажеттілік</label>
+              <label class="survey-option"><input type="radio" name="q3" value="no"> Жоқ, дайын емеспін</label>
+            </div>
+          </div>
+
+          <button class="submit-btn" onclick="submitSurvey()">НӘТИЖЕНІ КӨРУ →</button>
+
+          <div class="survey-result" id="surveyResult">
+            <h4>✅ Жауабыңыз қабылданды!</h4>
+            <p id="resultText"></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: АВТОРЛАР -->
+    <section class="lab-section" id="section-authors">
+      <div class="section-content">
+        <div class="authors">
+          <div class="author-card">
+            <div class="author-avatar">👩‍🔬</div>
+            <h4>Бекназар Томирис Нұрланқызы</h4>
+            <div class="role">11-сынып оқушысы · Зерттеуші</div>
+            <p class="author-info">Жаратылыстану-математикалық бағыт<br>Биология және тіршілік туралы ғылымдар</p>
+          </div>
+          <div class="author-card">
+            <div class="author-avatar">👩‍🏫</div>
+            <h4>Бекен Назгүл Бекенқызы</h4>
+            <div class="role">Ғылыми жетекші · Биология мұғалімі</div>
+            <p class="author-info">Педагог-модератор<br>Ғылыми жобаны жетекшілік етуші</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- Модальді терезе (Жоба туралы) -->
+<div class="modal-overlay hidden" id="projectModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <h2>ЖОБА ТУРАЛЫ</h2>
+    <div class="modal-content">
+      <p><strong>Тақырып:</strong> «Киборг технологиясы: адамның сезім мүшелерін алмастыру мүмкіндігін эксперименттік зерттеу»</p>
+      <p><strong>Автор:</strong> Бекназар Томирис Нұрланқызы (11-сынып)</p>
+      <p><strong>Жетекші:</strong> Бекен Назгүл Бекенқызы</p>
+      <p><strong>Бағыт:</strong> Жаратылыстану-математикалық</p>
+      <p><strong>Секция:</strong> Биология және тіршілік туралы ғылымдар. Биохимия</p>
+      <hr>
+      <p><strong>Мақсат:</strong> Жасанды жүйелер мен нейроинтерфейстер арқылы адамның сезім мүшелерін алмастыру мүмкіндіктерін зерттеу және қоғамның бұл технологияға деген көзқарасын анықтау.</p>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
