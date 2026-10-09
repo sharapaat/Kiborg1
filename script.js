@@ -330,7 +330,7 @@ brainModel.scale.setScalar(scale);
     );
   }
 
-// === БӨЛІКТЕРДІҢ ТҮСТІ АЙМАҚТАРЫ (АВТО-ЕСЕПТЕУ) ===
+// === БӨЛІКТЕРДІҢ ТҮСТІ АЙМАҚТАРЫ (КІШІРЕК) ===
 function createColorZones() {
   brainPartsMeshes = [];
 
@@ -339,7 +339,6 @@ function createColorZones() {
   const min = bbox.min;
   const max = bbox.max;
   
-  // Ми орталығы мен өлшемі
   const cx = (min.x + max.x) / 2;
   const cy = (min.y + max.y) / 2;
   const cz = (min.z + max.z) / 2;
@@ -347,38 +346,34 @@ function createColorZones() {
   const sy = (max.y - min.y);
   const sz = (max.z - min.z);
 
-  console.log('Ми шекаралары:', {min, max, cx, cy, cz, sx, sy, sz});
+  console.log('Ми шекаралары:', {cx, cy, cz, sx, sy, sz});
 
-  // Мидың бағыты: X осі ұзын болса → ми X бойынша жатыр
-  // Біздің модель: sx=3.12, sy=2.16, sz=2.89 → X басым
-
-  // === ӘР БӨЛІКТІҢ ПОЗИЦИЯСЫН ЕСЕПТЕУ ===
-  // Пропорционалды (ми центрінен %)
+  // === КІШІРЕК ӨЛШЕМДЕР (мидың 25-35%) ===
   const parts = {
     frontal: {
       // Сол жақ (ми басы)
-      xPct: -0.75, yPct: 0.05, zPct: 0.0,
-      scalePct: [0.55, 0.55, 0.65]
+      xPct: -0.7, yPct: 0.05, zPct: 0.0,
+      scalePct: [0.32, 0.35, 0.38]     // 30% өлшем
     },
     parietal: {
       // Жоғары
-      xPct: 0.1, yPct: 0.65, zPct: 0.0,
-      scalePct: [0.55, 0.45, 0.6]
+      xPct: 0.05, yPct: 0.55, zPct: 0.0,
+      scalePct: [0.35, 0.28, 0.4]
     },
     temporal: {
       // Төмен-сол (бүйір)
-      xPct: -0.15, yPct: -0.25, zPct: 0.3,
-      scalePct: [0.5, 0.4, 0.5]
+      xPct: -0.15, yPct: -0.2, zPct: 0.35,
+      scalePct: [0.3, 0.25, 0.3]
     },
     occipital: {
       // Оң жақ (ми ұшы)
-      xPct: 0.7, yPct: 0.05, zPct: 0.0,
-      scalePct: [0.5, 0.5, 0.6]
+      xPct: 0.65, yPct: 0.05, zPct: 0.0,
+      scalePct: [0.3, 0.32, 0.35]
     },
     cerebellum: {
       // Төмен-оң (ми сабауы)
-      xPct: 0.55, yPct: -0.5, zPct: 0.1,
-      scalePct: [0.45, 0.35, 0.45]
+      xPct: 0.45, yPct: -0.55, zPct: 0.1,
+      scalePct: [0.28, 0.22, 0.28]
     }
   };
 
@@ -386,31 +381,28 @@ function createColorZones() {
     const part = BRAIN_PARTS[key];
     const p = parts[key];
 
-    // Позицияны ми центрі мен өлшеміне қатысты есептеу
     const pos = [
       cx + sx * p.xPct,
       cy + sy * p.yPct,
       cz + sz * p.zPct
     ];
 
-    // Өлшемді ми өлшеміне қатысты есептеу
     const scale = [
       sx * p.scalePct[0],
       sy * p.scalePct[1],
       sz * p.scalePct[2]
     ];
 
-    // === ТҮСТІ СФЕРА ===
+    // === ТҮСТІ СФЕРА (кішірек, жартылай мөлдір) ===
     const geo = new THREE.SphereGeometry(1, 32, 32);
     const mat = new THREE.MeshPhongMaterial({
       color: part.color,
       emissive: part.color,
-      emissiveIntensity: 0.5,
+      emissiveIntensity: 0.6,
       transparent: true,
-      opacity: 0.5,
+      opacity: 0.6,
       shininess: 80,
-      depthWrite: false,
-      depthTest: true
+      depthWrite: false
     });
     const sphere = new THREE.Mesh(geo, mat);
     sphere.position.set(...pos);
@@ -418,33 +410,13 @@ function createColorZones() {
     sphere.userData = { 
       partKey: key, 
       isColorZone: true,
-      baseOpacity: 0.5,
-      baseEmissive: 0.5
+      baseOpacity: 0.6,
+      baseEmissive: 0.6
     };
     brainGroup.add(sphere);
     brainPartsMeshes.push(sphere);
 
-    // === ЖАРҚЫРАУ (glow) ===
-    const glowGeo = new THREE.SphereGeometry(1, 24, 24);
-    const glowMat = new THREE.MeshBasicMaterial({
-      color: part.color,
-      transparent: true,
-      opacity: 0.15,
-      side: THREE.BackSide,
-      depthWrite: false
-    });
-    const glow = new THREE.Mesh(glowGeo, glowMat);
-    glow.position.set(...pos);
-    glow.scale.set(scale[0] * 1.2, scale[1] * 1.2, scale[2] * 1.2);
-    glow.userData = { 
-      partKey: key, 
-      isGlow: true,
-      baseOpacity: 0.15
-    };
-    brainGroup.add(glow);
-    brainPartsMeshes.push(glow);
-
-    console.log(`${key} → позиция: ${pos.join(', ')} | өлшем: ${scale.join(', ')}`);
+    console.log(`${key} → позиция: ${pos.map(v => v.toFixed(2)).join(', ')} | өлшем: ${scale.map(v => v.toFixed(2)).join(', ')}`);
   });
 }
 
