@@ -287,14 +287,14 @@ function initBrain3D() {
         brainModel = gltf.scene;
         
         const box = new THREE.Box3().setFromObject(brainModel);
-        const center = box.getCenter(new THREE.Vector3());
-        const size = box.getSize(new THREE.Vector3());
-        
-        brainModel.position.sub(center);
-        
-        const maxDim = Math.max(size.x, size.y, size.z);
-        const scale = 2.5 / maxDim;
-        brainModel.scale.setScalar(scale);
+const size = box.getSize(new THREE.Vector3());
+
+// ❌ brainModel.position.sub(center) — ӨШІРІЛДІ
+// Модельді өз орнында қалдырамыз
+
+const maxDim = Math.max(size.x, size.y, size.z);
+const scale = 2.5 / maxDim;
+brainModel.scale.setScalar(scale);
 
         // Материалдарды жақсарту
         brainModel.traverse((child) => {
@@ -330,62 +330,123 @@ function initBrain3D() {
     );
   }
 
-  // === БӨЛІКТЕРДІҢ ТҮСТІ АЙМАҚТАРЫ ===
-  function createColorZones() {
-    brainPartsMeshes = [];
+// === БӨЛІКТЕРДІҢ ТҮСТІ АЙМАҚТАРЫ (АВТО-ЕСЕПТЕУ) ===
+function createColorZones() {
+  brainPartsMeshes = [];
 
-    Object.keys(BRAIN_PARTS).forEach(key => {
-      const part = BRAIN_PARTS[key];
+  // Ми моделінің НАҚТЫ шекараларын алу
+  const bbox = new THREE.Box3().setFromObject(brainModel);
+  const min = bbox.min;
+  const max = bbox.max;
+  
+  // Ми орталығы мен өлшемі
+  const cx = (min.x + max.x) / 2;
+  const cy = (min.y + max.y) / 2;
+  const cz = (min.z + max.z) / 2;
+  const sx = (max.x - min.x);
+  const sy = (max.y - min.y);
+  const sz = (max.z - min.z);
 
-      // === НЕГІЗГІ ТҮСТІ СФЕРА — бөлікті "бояйды" ===
-      const geo = new THREE.SphereGeometry(1, 40, 40);
-      const mat = new THREE.MeshPhongMaterial({
-        color: part.color,
-        emissive: part.color,
-        emissiveIntensity: 0.4,
-        transparent: true,
-        opacity: 0.55,           // Жартылай мөлдір — ми ішінен көрінеді
-        shininess: 80,
-        depthWrite: false,       // Тереңдікке әсер етпейді
-        depthTest: true
-      });
-      const sphere = new THREE.Mesh(geo, mat);
-      sphere.position.set(...part.position);
-      sphere.scale.set(...part.scale);
-      sphere.userData = { 
-        partKey: key, 
-        isColorZone: true,
-        baseOpacity: 0.55,
-        baseEmissive: 0.4
-      };
-      brainGroup.add(sphere);
-      brainPartsMeshes.push(sphere);
+  console.log('Ми шекаралары:', {min, max, cx, cy, cz, sx, sy, sz});
 
-      // === СЫРТҚЫ ЖАРҚЫРАУ (glow) ===
-      const glowGeo = new THREE.SphereGeometry(1, 32, 32);
-      const glowMat = new THREE.MeshBasicMaterial({
-        color: part.color,
-        transparent: true,
-        opacity: 0.12,
-        side: THREE.BackSide,
-        depthWrite: false
-      });
-      const glow = new THREE.Mesh(glowGeo, glowMat);
-      glow.position.set(...part.position);
-      glow.scale.set(
-        part.scale[0] * 1.15,
-        part.scale[1] * 1.15,
-        part.scale[2] * 1.15
-      );
-      glow.userData = { 
-        partKey: key, 
-        isGlow: true,
-        baseOpacity: 0.12
-      };
-      brainGroup.add(glow);
-      brainPartsMeshes.push(glow);
+  // Мидың бағыты: X осі ұзын болса → ми X бойынша жатыр
+  // Біздің модель: sx=3.12, sy=2.16, sz=2.89 → X басым
+
+  // === ӘР БӨЛІКТІҢ ПОЗИЦИЯСЫН ЕСЕПТЕУ ===
+  // Пропорционалды (ми центрінен %)
+  const parts = {
+    frontal: {
+      // Сол жақ (ми басы)
+      xPct: -0.75, yPct: 0.05, zPct: 0.0,
+      scalePct: [0.55, 0.55, 0.65]
+    },
+    parietal: {
+      // Жоғары
+      xPct: 0.1, yPct: 0.65, zPct: 0.0,
+      scalePct: [0.55, 0.45, 0.6]
+    },
+    temporal: {
+      // Төмен-сол (бүйір)
+      xPct: -0.15, yPct: -0.25, zPct: 0.3,
+      scalePct: [0.5, 0.4, 0.5]
+    },
+    occipital: {
+      // Оң жақ (ми ұшы)
+      xPct: 0.7, yPct: 0.05, zPct: 0.0,
+      scalePct: [0.5, 0.5, 0.6]
+    },
+    cerebellum: {
+      // Төмен-оң (ми сабауы)
+      xPct: 0.55, yPct: -0.5, zPct: 0.1,
+      scalePct: [0.45, 0.35, 0.45]
+    }
+  };
+
+  Object.keys(parts).forEach(key => {
+    const part = BRAIN_PARTS[key];
+    const p = parts[key];
+
+    // Позицияны ми центрі мен өлшеміне қатысты есептеу
+    const pos = [
+      cx + sx * p.xPct,
+      cy + sy * p.yPct,
+      cz + sz * p.zPct
+    ];
+
+    // Өлшемді ми өлшеміне қатысты есептеу
+    const scale = [
+      sx * p.scalePct[0],
+      sy * p.scalePct[1],
+      sz * p.scalePct[2]
+    ];
+
+    // === ТҮСТІ СФЕРА ===
+    const geo = new THREE.SphereGeometry(1, 32, 32);
+    const mat = new THREE.MeshPhongMaterial({
+      color: part.color,
+      emissive: part.color,
+      emissiveIntensity: 0.5,
+      transparent: true,
+      opacity: 0.5,
+      shininess: 80,
+      depthWrite: false,
+      depthTest: true
     });
-  }
+    const sphere = new THREE.Mesh(geo, mat);
+    sphere.position.set(...pos);
+    sphere.scale.set(...scale);
+    sphere.userData = { 
+      partKey: key, 
+      isColorZone: true,
+      baseOpacity: 0.5,
+      baseEmissive: 0.5
+    };
+    brainGroup.add(sphere);
+    brainPartsMeshes.push(sphere);
+
+    // === ЖАРҚЫРАУ (glow) ===
+    const glowGeo = new THREE.SphereGeometry(1, 24, 24);
+    const glowMat = new THREE.MeshBasicMaterial({
+      color: part.color,
+      transparent: true,
+      opacity: 0.15,
+      side: THREE.BackSide,
+      depthWrite: false
+    });
+    const glow = new THREE.Mesh(glowGeo, glowMat);
+    glow.position.set(...pos);
+    glow.scale.set(scale[0] * 1.2, scale[1] * 1.2, scale[2] * 1.2);
+    glow.userData = { 
+      partKey: key, 
+      isGlow: true,
+      baseOpacity: 0.15
+    };
+    brainGroup.add(glow);
+    brainPartsMeshes.push(glow);
+
+    console.log(`${key} → позиция: ${pos.join(', ')} | өлшем: ${scale.join(', ')}`);
+  });
+}
 
   function showBrainError() {
     document.getElementById('brainInfo').innerHTML = `
