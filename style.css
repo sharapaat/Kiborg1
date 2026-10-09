@@ -1467,3 +1467,13 @@ body { overflow-x: hidden; }
   
   .skip-btn { right: 20px; top: auto; bottom: 20px; }
 }
+/* Бөлік chip-тері түрлі-түсті */
+.part-chip {
+  transition: all 0.3s;
+  position: relative;
+}
+
+.part-chip:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
