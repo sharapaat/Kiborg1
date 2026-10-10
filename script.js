@@ -539,17 +539,14 @@ function highlightBrainPart(partKey, on) {
     if (m.userData.isColorZone) {
       const baseS = m.userData.baseScale;
       if (isHover) {
-        // Hover — 1.8× үлкейеді + күшті жарқырау
         m.scale.set(baseS[0] * 1.8, baseS[1] * 1.8, baseS[2] * 1.8);
         m.material.emissiveIntensity = 2.5;
         m.material.opacity = 1.0;
       } else if (isSelected) {
-        // Таңдалған — 1.5× үлкейеді
         m.scale.set(baseS[0] * 1.5, baseS[1] * 1.5, baseS[2] * 1.5);
         m.material.emissiveIntensity = 2.0;
         m.material.opacity = 1.0;
       } else {
-        // Қалыпты
         m.scale.set(baseS[0], baseS[1], baseS[2]);
         m.material.emissiveIntensity = 1.0;
         m.material.opacity = 0.95;
@@ -572,6 +569,7 @@ function highlightBrainPart(partKey, on) {
     }
   });
 }
+
 function setupBrainEvents(container) {
   container.addEventListener('mousedown', e => {
     brainIsDragging = true;
