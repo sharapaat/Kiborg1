@@ -154,7 +154,7 @@ document.querySelectorAll('.side-link').forEach(link => {
 });
 
 /* ============================================================
-   МИ 3D МОДЕЛІ
+   МИ 3D МОДЕЛІ — 5 ТҮСТІ БӨЛІК
 ============================================================ */
 let brainScene, brainCamera, brainRenderer, brainGroup;
 let brainIsDragging = false;
@@ -170,39 +170,39 @@ let brainActivePart = null;
 
 const BRAIN_PARTS = {
   frontal: {
-    name: 'Фронталды бөлік', en: 'Frontal Lobe', icon: '🎯',
+    name: 'Маңдай бөлігі', en: 'Frontal Lobe', icon: '🎯',
     desc: 'Мидың алдыңғы бөлігі. Шешім қабылдау, жоспарлау, сөйлеу, қозғалыс бақылауы үшін жауапты.',
     func: 'Қозғалыс, сөйлеу, шешім қабылдау',
     cyborg: 'DBS импланты осы аймаққа әсер етеді.',
-    color: 0x4a90e2
+    color: 0x4dc3eb        // 🔵 Ашық көк (суреттегідей)
   },
   parietal: {
-    name: 'Париеталды бөлік', en: 'Parietal Lobe', icon: '🖐️',
+    name: 'Төбе бөлігі', en: 'Parietal Lobe', icon: '🖐️',
     desc: 'Сезімді өңдеу, кеңістікті қабылдау үшін жауапты.',
     func: 'Сипап сезу, температура, ауырсыну',
     cyborg: 'Жасанды тері импланттары осында жалғанады.',
-    color: 0xf5a623
+    color: 0xec4877        // 🔴 Қызғылт
   },
   temporal: {
-    name: 'Темпоралды бөлік', en: 'Temporal Lobe', icon: '👂',
+    name: 'Самай бөлігі', en: 'Temporal Lobe', icon: '👂',
     desc: 'Есту, есте сақтау, тілді түсіну үшін жауапты.',
     func: 'Есту, тіл, есте сақтау',
     cyborg: 'Кохлеарлы импланттар осында қосылады.',
-    color: 0x7ed321
+    color: 0xf5c542        // 🟡 Сары
   },
   occipital: {
-    name: 'Оксипиталды бөлік', en: 'Occipital Lobe', icon: '👁️',
+    name: 'Шүйде бөлігі', en: 'Occipital Lobe', icon: '👁️',
     desc: 'Көру ақпаратын өңдейтін ми бөлігі.',
     func: 'Көру, түс, пішін тану',
     cyborg: 'Argus II торлы қабық осында сигнал жібереді.',
-    color: 0xe94b6f
+    color: 0x8b6bd9        // 🟣 Күлгін
   },
   cerebellum: {
     name: 'Мишық', en: 'Cerebellum', icon: '⚖️',
     desc: 'Тепе-теңдік, координация үшін жауапты.',
     func: 'Тепе-теңдік, үйлестіру',
     cyborg: 'Вестибулярлы импланттар осында орнатылады.',
-    color: 0x9b59b6
+    color: 0xe8a4a4        // 🔴 Ашық қызғылт (мишық)
   }
 };
 
@@ -226,17 +226,17 @@ function initBrain3D() {
   brainRenderer.toneMappingExposure = 1.1;
   container.appendChild(brainRenderer.domElement);
 
-  brainScene.add(new THREE.AmbientLight(0xffffff, 0.9));
-  const key = new THREE.DirectionalLight(0xffffff, 1.4);
+  brainScene.add(new THREE.AmbientLight(0xffffff, 1.0));
+  const key = new THREE.DirectionalLight(0xffffff, 1.6);
   key.position.set(5, 5, 5);
   brainScene.add(key);
-  const fill = new THREE.DirectionalLight(0xcce5ff, 0.7);
+  const fill = new THREE.DirectionalLight(0xcce5ff, 0.8);
   fill.position.set(-5, 3, 3);
   brainScene.add(fill);
-  const rim = new THREE.DirectionalLight(0xffccdd, 0.5);
+  const rim = new THREE.DirectionalLight(0xffccdd, 0.6);
   rim.position.set(0, -3, -5);
   brainScene.add(rim);
-  const top = new THREE.DirectionalLight(0xffffff, 0.6);
+  const top = new THREE.DirectionalLight(0xffffff, 0.7);
   top.position.set(0, 8, 0);
   brainScene.add(top);
 
@@ -289,8 +289,12 @@ function initBrain3D() {
 
         brainGroup.add(brainModel);
 
-        createColorZones();
+        // === БӨЛІКТЕРДІҢ ҮЛКЕН ТҮСТІ СФЕРАЛАРЫ ===
+        createBrainZones();
+
+        // Импульстер
         addPulses();
+
         resetBrainInfoPanel();
         console.log('✅ Ми моделі жүктелді!');
       },
@@ -304,8 +308,8 @@ function initBrain3D() {
     );
   }
 
-  // ============ БӨЛІКТЕРДІҢ НҮКТЕЛЕРІ ============
-  function createColorZones() {
+  // ============ 5 ТҮСТІ БӨЛІК — МИ БЕТІНДЕ ============
+  function createBrainZones() {
     brainPartsMeshes = [];
 
     const bbox = new THREE.Box3().setFromObject(brainModel);
@@ -322,92 +326,66 @@ function initBrain3D() {
     console.log('Ми центрі:', cx.toFixed(2), cy.toFixed(2), cz.toFixed(2));
     console.log('Ми өлшемі:', sx.toFixed(2), sy.toFixed(2), sz.toFixed(2));
 
-    // === МИ БЕТІНЕ ЖАҚЫН ОРНАЛАСТЫРУ ===
-    // Ми X осі бойынша жатыр (сол жақ = бас, оң жақ = ми ұшы)
-    // 0.42 = мидың жарты өлшемінен тыс (бетке шығу үшін)
+    // === МИДЫҢ БЕТІНЕ СФЕРАЛАР (суреттегідей) ===
+    // X осі бойынша ми жатыр (сол = маңдай, оң = шүйде)
     const parts = {
-      frontal:    { x: -0.38, y: 0.05, z: 0.1 },   // сол жақ
-      parietal:   { x: 0.05, y: 0.42, z: 0.05 },   // жоғары
-      temporal:   { x: -0.05, y: -0.32, z: 0.15 }, // төмен-алды
-      occipital:  { x: 0.4, y: 0.05, z: 0.0 },     // оң жақ
-      cerebellum: { x: 0.25, y: -0.42, z: 0.05 }   // төмен-оң
+      frontal: {
+        // Сол жақ = МАҢДАЙ (көк)
+        pos: [cx - sx * 0.3, cy + sy * 0.08, cz + sz * 0.05],
+        scale: [sx * 0.45, sy * 0.55, sz * 0.55]
+      },
+      parietal: {
+        // Жоғары-орта = ТӨБЕ (қызғылт)
+        pos: [cx + sx * 0.05, cy + sy * 0.25, cz + sz * 0.02],
+        scale: [sx * 0.35, sy * 0.4, sz * 0.5]
+      },
+      temporal: {
+        // Төмен-алды = САМАЙ (сары)
+        pos: [cx - sx * 0.05, cy - sy * 0.18, cz + sz * 0.15],
+        scale: [sx * 0.4, sy * 0.35, sz * 0.45]
+      },
+      occipital: {
+        // Оң жақ = ШҮЙДЕ (күлгін)
+        pos: [cx + sx * 0.3, cy + sy * 0.05, cz + sz * 0.02],
+        scale: [sx * 0.35, sy * 0.5, sz * 0.5]
+      },
+      cerebellum: {
+        // Төмен-оң = МИШЫҚ (ашық қызғылт)
+        pos: [cx + sx * 0.22, cy - sy * 0.4, cz + sz * 0.05],
+        scale: [sx * 0.3, sy * 0.28, sz * 0.35]
+      }
     };
 
     Object.keys(parts).forEach(key => {
       const part = BRAIN_PARTS[key];
       const p = parts[key];
 
-      const pos = [
-        cx + sx * p.x,
-        cy + sy * p.y,
-        cz + sz * p.z
-      ];
-
-      // === 1) НЕГІЗГІ ТҮСТІ ШАР ===
-      const sphereGeo = new THREE.SphereGeometry(1, 24, 24);
-      const sphereMat = new THREE.MeshPhongMaterial({
+      // === ТҮСТІ СФЕРА (үлкен, ми бетін бояйды) ===
+      const geo = new THREE.SphereGeometry(1, 48, 48);
+      const mat = new THREE.MeshPhongMaterial({
         color: part.color,
         emissive: part.color,
-        emissiveIntensity: 1.2,
-        shininess: 120,
+        emissiveIntensity: 0.15,     // Жұмсақ жарық
+        shininess: 40,
         transparent: true,
-        opacity: 0.95,
+        opacity: 0.72,               // Жартылай мөлдір — ми көрінеді
         depthWrite: false,
-        depthTest: false        // ← МАҢЫЗДЫ: әрқашан көрінеді
+        side: THREE.DoubleSide
       });
-      const sphere = new THREE.Mesh(sphereGeo, sphereMat);
-      sphere.position.set(pos[0], pos[1], pos[2]);
-      sphere.scale.set(0.1, 0.1, 0.1);
-      sphere.renderOrder = 999;  // ← Ең үстінде көрінеді
+      const sphere = new THREE.Mesh(geo, mat);
+      sphere.position.set(p.pos[0], p.pos[1], p.pos[2]);
+      sphere.scale.set(p.scale[0], p.scale[1], p.scale[2]);
       sphere.userData = { 
         partKey: key, 
         isColorZone: true,
-        baseScale: [0.1, 0.1, 0.1],
-        baseColor: part.color
+        baseOpacity: 0.72,
+        baseEmissive: 0.15,
+        baseScale: p.scale
       };
       brainGroup.add(sphere);
       brainPartsMeshes.push(sphere);
 
-      // === 2) GLOW САҚИНА ===
-      const glowGeo = new THREE.SphereGeometry(1, 20, 20);
-      const glowMat = new THREE.MeshBasicMaterial({
-        color: part.color,
-        transparent: true,
-        opacity: 0.5,
-        side: THREE.BackSide,
-        depthWrite: false,
-        depthTest: false
-      });
-      const glow = new THREE.Mesh(glowGeo, glowMat);
-      glow.position.set(pos[0], pos[1], pos[2]);
-      glow.scale.set(0.18, 0.18, 0.18);
-      glow.renderOrder = 998;
-      glow.userData = { 
-        partKey: key, 
-        isGlow: true,
-        baseScale: [0.18, 0.18, 0.18],
-        baseOpacity: 0.5
-      };
-      brainGroup.add(glow);
-      brainPartsMeshes.push(glow);
-
-      // === 3) БАСУ АЙМАҒЫ ===
-      const clickGeo = new THREE.SphereGeometry(1, 16, 16);
-      const clickMat = new THREE.MeshBasicMaterial({
-        color: part.color,
-        transparent: true,
-        opacity: 0.0,
-        depthWrite: false,
-        depthTest: false
-      });
-      const clickZone = new THREE.Mesh(clickGeo, clickMat);
-      clickZone.position.set(pos[0], pos[1], pos[2]);
-      clickZone.scale.set(0.22, 0.22, 0.22);
-      clickZone.userData = { partKey: key, isClickZone: true };
-      brainGroup.add(clickZone);
-      brainPartsMeshes.push(clickZone);
-
-      console.log(`${key} → [${pos.map(v => v.toFixed(2)).join(', ')}]`);
+      console.log(`${key} → [${p.pos.map(v => v.toFixed(2)).join(', ')}]`);
     });
   }
 
@@ -476,11 +454,11 @@ function initBrain3D() {
       });
     }
 
+    // Түс аймақтары — жұмсақ пульсация
     brainPartsMeshes.forEach((m, i) => {
-      if (m.userData.isGlow) {
-        const baseS = m.userData.baseScale;
-        const pulse = 1 + Math.sin(t * 2 + i) * 0.2;
-        m.scale.set(baseS[0] * pulse, baseS[1] * pulse, baseS[2] * pulse);
+      if (m.userData.isColorZone) {
+        const pulse = m.userData.baseOpacity + Math.sin(t * 1.5 + i) * 0.05;
+        m.material.opacity = pulse;
       }
     });
 
@@ -503,39 +481,27 @@ function initBrain3D() {
 
 function highlightBrainPart(partKey, on) {
   brainPartsMeshes.forEach(m => {
+    if (!m.userData.isColorZone) return;
     const key = m.userData.partKey;
     const isHover = (key === partKey && on);
     const isSelected = (brainActivePart === key);
     
-    if (m.userData.isColorZone) {
-      const baseS = m.userData.baseScale;
-      if (isHover) {
-        m.scale.set(baseS[0] * 2.0, baseS[1] * 2.0, baseS[2] * 2.0);
-        m.material.emissiveIntensity = 2.5;
-        m.material.opacity = 1.0;
-      } else if (isSelected) {
-        m.scale.set(baseS[0] * 1.6, baseS[1] * 1.6, baseS[2] * 1.6);
-        m.material.emissiveIntensity = 2.0;
-        m.material.opacity = 1.0;
-      } else {
-        m.scale.set(baseS[0], baseS[1], baseS[2]);
-        m.material.emissiveIntensity = 1.2;
-        m.material.opacity = 0.95;
-      }
-    }
-    
-    if (m.userData.isGlow) {
-      const baseS = m.userData.baseScale;
-      if (isHover) {
-        m.scale.set(baseS[0] * 2.2, baseS[1] * 2.2, baseS[2] * 2.2);
-        m.material.opacity = 0.95;
-      } else if (isSelected) {
-        m.scale.set(baseS[0] * 1.8, baseS[1] * 1.8, baseS[2] * 1.8);
-        m.material.opacity = 0.8;
-      } else {
-        m.scale.set(baseS[0], baseS[1], baseS[2]);
-        m.material.opacity = 0.5;
-      }
+    if (isHover) {
+      // Hover — жарқырайды
+      m.material.opacity = 0.95;
+      m.material.emissiveIntensity = 0.7;
+    } else if (isSelected) {
+      // Таңдалған — белсенді
+      m.material.opacity = 0.88;
+      m.material.emissiveIntensity = 0.5;
+    } else if (brainActivePart || brainHovered) {
+      // Басқалары — күңгірт
+      m.material.opacity = 0.35;
+      m.material.emissiveIntensity = 0.08;
+    } else {
+      // Қалыпты
+      m.material.opacity = 0.72;
+      m.material.emissiveIntensity = 0.15;
     }
   });
 }
@@ -567,7 +533,7 @@ function setupBrainEvents(container) {
     }
 
     brainRaycaster.setFromCamera(brainMouse, brainCamera);
-    const clickable = brainPartsMeshes.filter(m => m.userData.isClickZone);
+    const clickable = brainPartsMeshes.filter(m => m.userData.isColorZone);
     const hits = brainRaycaster.intersectObjects(clickable, false);
 
     if (hits.length > 0) {
@@ -585,13 +551,8 @@ function setupBrainEvents(container) {
       } else {
         brainPartsMeshes.forEach(m => {
           if (m.userData.isColorZone) {
-            m.scale.set(m.userData.baseScale[0], m.userData.baseScale[1], m.userData.baseScale[2]);
-            m.material.emissiveIntensity = 1.2;
-            m.material.opacity = 0.95;
-          }
-          if (m.userData.isGlow) {
-            m.scale.set(m.userData.baseScale[0], m.userData.baseScale[1], m.userData.baseScale[2]);
-            m.material.opacity = 0.5;
+            m.material.opacity = 0.72;
+            m.material.emissiveIntensity = 0.15;
           }
         });
       }
@@ -605,7 +566,7 @@ function setupBrainEvents(container) {
     brainMouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
     brainRaycaster.setFromCamera(brainMouse, brainCamera);
     
-    const clickable = brainPartsMeshes.filter(m => m.userData.isClickZone);
+    const clickable = brainPartsMeshes.filter(m => m.userData.isColorZone);
     const hits = brainRaycaster.intersectObjects(clickable, false);
     
     if (hits.length > 0) {
@@ -676,19 +637,19 @@ function resetBrainInfoPanel() {
     <div class="info-placeholder">
       <div class="info-placeholder-icon">🧠</div>
       <h3>Ми бөлігін таңдаңыз</h3>
-      <p>Мидағы түрлі-түсті нүктелерді басып, бөліктер туралы біліңіз</p>
+      <p>Мидағы түрлі-түсті бөліктерді басып, олар туралы біліңіз</p>
       <div class="brain-parts-list">
         ${Object.keys(BRAIN_PARTS).map(key => {
           const p = BRAIN_PARTS[key];
           const hex = '#' + p.color.toString(16).padStart(6, '0');
-          return `<button class="part-chip" onclick="selectBrainPart('${key}')" style="border-color: ${hex}; color: ${hex};">${p.icon} ${p.name.split(' ')[0]}</button>`;
+          return `<button class="part-chip" onclick="selectBrainPart('${key}')" style="border-color: ${hex}; color: ${hex};">${p.icon} ${p.name}</button>`;
         }).join('')}
       </div>
       <div style="margin-top: 25px; padding: 16px; background: #f0f7ff; border-radius: 10px; font-size: 0.85rem; text-align: left;">
         <strong>💡 Қалай қолдану:</strong><br>
         1. Миды айналдырыңыз (тышқан)<br>
         2. Жақындатыңыз (дөңгелек)<br>
-        3. <strong>Түсті нүктені</strong> басыңыз
+        3. <strong>Түсті бөлікті</strong> басыңыз
       </div>
     </div>
   `;
@@ -704,13 +665,8 @@ function resetBrainView() {
   
   brainPartsMeshes.forEach(m => {
     if (m.userData.isColorZone) {
-      m.material.opacity = 0.95;
-      m.material.emissiveIntensity = 1.2;
-      m.scale.set(m.userData.baseScale[0], m.userData.baseScale[1], m.userData.baseScale[2]);
-    }
-    if (m.userData.isGlow) {
-      m.material.opacity = 0.5;
-      m.scale.set(m.userData.baseScale[0], m.userData.baseScale[1], m.userData.baseScale[2]);
+      m.material.opacity = 0.72;
+      m.material.emissiveIntensity = 0.15;
     }
   });
   resetBrainInfoPanel();
