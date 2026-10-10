@@ -617,7 +617,7 @@ function setupBrainEvents(container) {
       if (brainActivePart) {
         highlightBrainPart(brainActivePart, true);
       } else {
-             // Қалпына келтіру
+        // Қалпына келтіру
         brainPartsMeshes.forEach(m => {
           if (m.userData.isColorZone) {
             m.scale.set(m.userData.baseScale[0], m.userData.baseScale[1], m.userData.baseScale[2]);
@@ -629,6 +629,9 @@ function setupBrainEvents(container) {
             m.material.opacity = 0.5;
           }
         });
+      }
+    }
+  });
 
   // === CLICK ===
   container.addEventListener('click', e => {
