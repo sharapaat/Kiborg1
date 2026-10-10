@@ -183,8 +183,6 @@ const BRAIN_PARTS = {
     desc: 'Мидың алдыңғы бөлігі. Шешім қабылдау, жоспарлау, сөйлеу, қозғалыс бақылауы үшін жауапты.',
     func: 'Қозғалыс, сөйлеу, шешім қабылдау',
     cyborg: 'DBS импланты осы аймаққа әсер етеді.',
-    position: [-1.0, 0.15, 0.0],       // сол жақ
-    scale: [0.9, 0.8, 0.9],             // сфера өлшемі (үлкенірек = көбірек қамтиды)
     color: 0x4a90e2
   },
   parietal: {
@@ -192,8 +190,6 @@ const BRAIN_PARTS = {
     desc: 'Сезімді өңдеу, кеңістікті қабылдау үшін жауапты.',
     func: 'Сипап сезу, температура, ауырсыну',
     cyborg: 'Жасанды тері импланттары осында жалғанады.',
-    position: [0.1, 0.75, 0.0],        // жоғары
-    scale: [1.0, 0.7, 0.9],
     color: 0xf5a623
   },
   temporal: {
@@ -201,8 +197,6 @@ const BRAIN_PARTS = {
     desc: 'Есту, есте сақтау, тілді түсіну үшін жауапты.',
     func: 'Есту, тіл, есте сақтау',
     cyborg: 'Кохлеарлы импланттар осында қосылады.',
-    position: [-0.15, -0.35, 0.3],     // төмен-алды
-    scale: [0.9, 0.6, 0.8],
     color: 0x7ed321
   },
   occipital: {
@@ -210,17 +204,13 @@ const BRAIN_PARTS = {
     desc: 'Көру ақпаратын өңдейтін ми бөлігі.',
     func: 'Көру, түс, пішін тану',
     cyborg: 'Argus II торлы қабық осында сигнал жібереді.',
-    position: [1.1, 0.15, 0.0],        // оң жақ
-    scale: [0.85, 0.8, 0.85],
     color: 0xe94b6f
   },
   cerebellum: {
     name: 'Мишық', en: 'Cerebellum', icon: '⚖️',
     desc: 'Тепе-теңдік, координация үшін жауапты.',
     func: 'Тепе-теңдік, үйлестіру',
-    cyborg: 'Вестибулярлы импланттар осында орнатылады.',
-    position: [0.75, -0.55, 0.1],      // төмен-оң
-    scale: [0.75, 0.55, 0.7],
+    cyborg: 'Везибулярлы импланттар осында орнатылады.',
     color: 0x9b59b6
   }
 };
@@ -331,7 +321,7 @@ brainModel.scale.setScalar(scale);
     );
   }
 
-// === 5 ТҮСТІ СФЕРА — әдемі, ықшам ===
+// === 5 ТҮСТІ НҮКТЕ — ми бетінде ===
 function createColorZones() {
   brainPartsMeshes = [];
 
@@ -342,31 +332,33 @@ function createColorZones() {
   const cx = (min.x + max.x) / 2;
   const cy = (min.y + max.y) / 2;
   const cz = (min.z + max.z) / 2;
-  const sx = (max.x - min.x);
-  const sy = (max.y - min.y);
-  const sz = (max.z - min.z);
+  const sx = (max.x - min.x);   // 3.12
+  const sy = (max.y - min.y);   // 2.16
+  const sz = (max.z - min.z);   // 2.89
 
-  // === ЫҚШАМ, ЖАЛПАҚ СФЕРАЛАР (ми бетінде жатады) ===
+  console.log('Ми центрі:', cx.toFixed(2), cy.toFixed(2), cz.toFixed(2));
+
+  // === НҮКТЕЛЕРДІҢ ПОЗИЦИЯЛАРЫ (ми бетінен сәл сырт) ===
   const parts = {
     frontal: {
-      xOff: -0.32, yOff: 0.08, zOff: 0.0,
-      sX: 0.28, sY: 0.32, sZ: 0.28       // кішірек + жалпақ
+      x: -0.32, y: 0.08, z: 0.0,     // сол жақ (бас)
+      color: 0x4a90e2
     },
     parietal: {
-      xOff: 0.05, yOff: 0.32, zOff: 0.0,
-      sX: 0.32, sY: 0.22, sZ: 0.32       // жалпақ (Y кіші)
+      x: 0.05, y: 0.35, z: 0.0,      // жоғары (төбе)
+      color: 0xf5a623
     },
     temporal: {
-      xOff: -0.05, yOff: -0.12, zOff: 0.15,
-      sX: 0.26, sY: 0.22, sZ: 0.26
+      x: -0.05, y: -0.12, z: 0.22,   // төмен-алды (бүйір)
+      color: 0x7ed321
     },
     occipital: {
-      xOff: 0.35, yOff: 0.08, zOff: 0.0,
-      sX: 0.26, sY: 0.3, sZ: 0.26
+      x: 0.35, y: 0.08, z: 0.0,      // оң жақ (ми ұшы)
+      color: 0xe94b6f
     },
     cerebellum: {
-      xOff: 0.18, yOff: -0.32, zOff: 0.05,
-      sX: 0.24, sY: 0.2, sZ: 0.24
+      x: 0.18, y: -0.32, z: 0.08,    // төмен-оң (ми сабауы)
+      color: 0x9b59b6
     }
   };
 
@@ -374,42 +366,77 @@ function createColorZones() {
     const part = BRAIN_PARTS[key];
     const p = parts[key];
 
+    // Позиция ми центріне қатысты
     const pos = [
-      cx + sx * p.xOff,
-      cy + sy * p.yOff,
-      cz + sz * p.zOff
+      cx + sx * p.x,
+      cy + sy * p.y,
+      cz + sz * p.z
     ];
 
-    const scale = [
-      sx * p.sX,
-      sy * p.sY,
-      sz * p.sZ
-    ];
-
-    // === НЕГІЗГІ СФЕРА (түсті) ===
-    const geo = new THREE.SphereGeometry(1, 40, 40);
-    const mat = new THREE.MeshPhongMaterial({
-      color: part.color,
-      emissive: part.color,
-      emissiveIntensity: 0.35,
+    // === 1) НЕГІЗГІ ТҮСТІ ШАР — ми бетінде ===
+    const sphereGeo = new THREE.SphereGeometry(1, 32, 32);
+    const sphereMat = new THREE.MeshPhongMaterial({
+      color: p.color,
+      emissive: p.color,
+      emissiveIntensity: 0.5,
+      shininess: 80,
       transparent: true,
-      opacity: 0.55,             // мөлдірірек — ми көрінеді
-      shininess: 100,            // жылтырақ
-      depthWrite: false,
-      side: THREE.DoubleSide
+      opacity: 0.9,
+      depthWrite: false
     });
-    const sphere = new THREE.Mesh(geo, mat);
+    const sphere = new THREE.Mesh(sphereGeo, sphereMat);
     sphere.position.set(pos[0], pos[1], pos[2]);
-    sphere.scale.set(scale[0], scale[1], scale[2]);
+    // Кішкентай, жалпақ шар (ми бетінде жатады)
+    sphere.scale.set(0.18, 0.18, 0.18);
     sphere.userData = { 
       partKey: key, 
       isColorZone: true,
-      baseOpacity: 0.55,
-      baseEmissive: 0.35,
-      baseScale: [scale[0], scale[1], scale[2]]
+      baseScale: [0.18, 0.18, 0.18],
+      baseColor: p.color
     };
     brainGroup.add(sphere);
     brainPartsMeshes.push(sphere);
+
+    // === 2) СЫРТҚЫ САҚИНА (glow) — жарқырау ===
+    const glowGeo = new THREE.SphereGeometry(1, 24, 24);
+    const glowMat = new THREE.MeshBasicMaterial({
+      color: p.color,
+      transparent: true,
+      opacity: 0.35,
+      side: THREE.BackSide,
+      depthWrite: false
+    });
+    const glow = new THREE.Mesh(glowGeo, glowMat);
+    glow.position.set(pos[0], pos[1], pos[2]);
+    glow.scale.set(0.32, 0.32, 0.32);
+    glow.userData = { 
+      partKey: key, 
+      isGlow: true,
+      baseScale: [0.32, 0.32, 0.32],
+      baseOpacity: 0.35
+    };
+    brainGroup.add(glow);
+    brainPartsMeshes.push(glow);
+
+    // === 3) БАСУ АЙМАҒЫ (көрінбейтін, үлкенірек) ===
+    const clickGeo = new THREE.SphereGeometry(1, 16, 16);
+    const clickMat = new THREE.MeshBasicMaterial({
+      color: p.color,
+      transparent: true,
+      opacity: 0.0,
+      depthWrite: false
+    });
+    const clickZone = new THREE.Mesh(clickGeo, clickMat);
+    clickZone.position.set(pos[0], pos[1], pos[2]);
+    clickZone.scale.set(0.4, 0.4, 0.4);
+    clickZone.userData = { 
+      partKey: key, 
+      isClickZone: true
+    };
+    brainGroup.add(clickZone);
+    brainPartsMeshes.push(clickZone);
+
+    console.log(`${key} → позиция: [${pos.map(v => v.toFixed(2)).join(', ')}]`);
   });
 }
   function showBrainError() {
@@ -478,11 +505,12 @@ function createColorZones() {
       });
     }
 
-       // Түс аймақтары пульсациясы
-    brainPartsMeshes.forEach(m => {
-      if (m.userData.isColorZone) {
-        const pulse = m.userData.baseOpacity + Math.sin(t * 2) * 0.08;
-        m.material.opacity = pulse;
+        // Glow сақина пульсациясы
+    brainPartsMeshes.forEach((m, i) => {
+      if (m.userData.isGlow) {
+        const baseS = m.userData.baseScale;
+        const pulse = 1 + Math.sin(t * 2 + i) * 0.15;
+        m.scale.set(baseS[0] * pulse, baseS[1] * pulse, baseS[2] * pulse);
       }
     });
 
@@ -505,32 +533,44 @@ function createColorZones() {
 
 function highlightBrainPart(partKey, on) {
   brainPartsMeshes.forEach(m => {
-    if (!m.userData.isColorZone) return;
+    const key = m.userData.partKey;
+    const isHover = (key === partKey && on);
+    const isSelected = (brainActivePart === key);
     
-    const isHover = (m.userData.partKey === partKey && on);
-    const isSelected = (brainActivePart === m.userData.partKey);
-    const dimmed = (brainActivePart || brainHovered) && !isSelected && !isHover;
-    
-    // Scale — hover кезде сәл үлкейеді
-    const baseS = m.userData.baseScale;
-    if (isHover) {
-      m.scale.set(baseS[0] * 1.1, baseS[1] * 1.1, baseS[2] * 1.1);
-    } else {
-      m.scale.set(baseS[0], baseS[1], baseS[2]);
+    // === НЕГІЗГІ ШАР ===
+    if (m.userData.isColorZone) {
+      const baseS = m.userData.baseScale;
+      if (isHover) {
+        // Hover — үлкейеді + жарқырайды
+        m.scale.set(baseS[0] * 1.5, baseS[1] * 1.5, baseS[2] * 1.5);
+        m.material.emissiveIntensity = 1.5;
+        m.material.opacity = 1.0;
+      } else if (isSelected) {
+        // Таңдалған — белсенді
+        m.scale.set(baseS[0] * 1.3, baseS[1] * 1.3, baseS[2] * 1.3);
+        m.material.emissiveIntensity = 1.2;
+        m.material.opacity = 1.0;
+      } else {
+        // Қалыпты
+        m.scale.set(baseS[0], baseS[1], baseS[2]);
+        m.material.emissiveIntensity = 0.5;
+        m.material.opacity = 0.9;
+      }
     }
     
-    if (isHover) {
-      m.material.opacity = 0.85;
-      m.material.emissiveIntensity = 1.0;
-    } else if (isSelected) {
-      m.material.opacity = 0.75;
-      m.material.emissiveIntensity = 0.8;
-    } else if (dimmed) {
-      m.material.opacity = 0.2;
-      m.material.emissiveIntensity = 0.1;
-    } else {
-      m.material.opacity = 0.55;
-      m.material.emissiveIntensity = 0.35;
+    // === GLOW САҚИНА ===
+    if (m.userData.isGlow) {
+      const baseS = m.userData.baseScale;
+      if (isHover) {
+        m.scale.set(baseS[0] * 1.6, baseS[1] * 1.6, baseS[2] * 1.6);
+        m.material.opacity = 0.7;
+      } else if (isSelected) {
+        m.scale.set(baseS[0] * 1.4, baseS[1] * 1.4, baseS[2] * 1.4);
+        m.material.opacity = 0.55;
+      } else {
+        m.scale.set(baseS[0], baseS[1], baseS[2]);
+        m.material.opacity = 0.35;
+      }
     }
   });
 }
@@ -544,55 +584,29 @@ function setupBrainEvents(container) {
 
   window.addEventListener('mouseup', () => brainIsDragging = false);
 
+  // === MOUSE MOVE + HOVER ===
   window.addEventListener('mousemove', e => {
     const rect = container.getBoundingClientRect();
     brainMouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
     brainMouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
 
-    if (!brainIsDragging) return;
-    const dx = e.clientX - brainPrevMouse.x;
-    const dy = e.clientY - brainPrevMouse.y;
-    brainTargetRot.y += dx * 0.008;
-    brainTargetRot.x += dy * 0.008;
-    brainTargetRot.x = Math.max(-1.2, Math.min(1.2, brainTargetRot.x));
-    brainPrevMouse.x = e.clientX;
-    brainPrevMouse.y = e.clientY;
-    brainAutoRotate = false;
-  });
-
-  // === CLICK — бөлікті таңдау ===
-  container.addEventListener('click', e => {
-    if (Math.abs(e.movementX) > 3 || Math.abs(e.movementY) > 3) return;
-    const rect = container.getBoundingClientRect();
-    brainMouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-    brainMouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
-    brainRaycaster.setFromCamera(brainMouse, brainCamera);
-    
-    // Тек түсті сфераларды тексереміз
-    const clickable = brainPartsMeshes.filter(m => m.userData.isColorZone);
-    const hits = brainRaycaster.intersectObjects(clickable, false);
-    
-    console.log('Click:', hits.length, 'нәтиже');
-    
-    if (hits.length > 0) {
-      const partKey = hits[0].object.userData.partKey;
-      console.log('Таңдалды:', partKey);
-      brainActivePart = partKey;
-      selectBrainPart(partKey);
+    if (brainIsDragging) {
+      const dx = e.clientX - brainPrevMouse.x;
+      const dy = e.clientY - brainPrevMouse.y;
+      brainTargetRot.y += dx * 0.008;
+      brainTargetRot.x += dy * 0.008;
+      brainTargetRot.x = Math.max(-1.2, Math.min(1.2, brainTargetRot.x));
+      brainPrevMouse.x = e.clientX;
+      brainPrevMouse.y = e.clientY;
+      brainAutoRotate = false;
+      return;
     }
-  });
 
-  // === HOVER — мышка апарғанда ===
-  container.addEventListener('mousemove', e => {
-    if (brainIsDragging) return;
-    const rect = container.getBoundingClientRect();
-    brainMouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-    brainMouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
-    
+    // HOVER
     brainRaycaster.setFromCamera(brainMouse, brainCamera);
-    const clickable = brainPartsMeshes.filter(m => m.userData.isColorZone);
+    const clickable = brainPartsMeshes.filter(m => m.userData.isClickZone);
     const hits = brainRaycaster.intersectObjects(clickable, false);
-    
+
     if (hits.length > 0) {
       const hitKey = hits[0].object.userData.partKey;
       if (brainHovered !== hitKey) {
@@ -600,22 +614,43 @@ function setupBrainEvents(container) {
         document.body.style.cursor = 'pointer';
         highlightBrainPart(hitKey, true);
       }
-    } else {
-      if (brainHovered) {
-        brainHovered = null;
-        document.body.style.cursor = '';
-        if (brainActivePart) {
-          highlightBrainPart(brainActivePart, true);
-        } else {
-          // Қалпына келтіру
-          brainPartsMeshes.forEach(m => {
-            if (m.userData.isColorZone) {
-              m.material.opacity = m.userData.baseOpacity;
-              m.material.emissiveIntensity = m.userData.baseEmissive;
-            }
-          });
-        }
+    } else if (brainHovered) {
+      brainHovered = null;
+      document.body.style.cursor = '';
+      if (brainActivePart) {
+        highlightBrainPart(brainActivePart, true);
+      } else {
+        // Қалпына келтіру
+        brainPartsMeshes.forEach(m => {
+          if (m.userData.isColorZone) {
+            m.scale.set(m.userData.baseScale[0], m.userData.baseScale[1], m.userData.baseScale[2]);
+            m.material.emissiveIntensity = 0.5;
+            m.material.opacity = 0.9;
+          }
+          if (m.userData.isGlow) {
+            m.scale.set(m.userData.baseScale[0], m.userData.baseScale[1], m.userData.baseScale[2]);
+            m.material.opacity = 0.35;
+          }
+        });
       }
+    }
+  });
+
+  // === CLICK ===
+  container.addEventListener('click', e => {
+    if (Math.abs(e.movementX) > 3 || Math.abs(e.movementY) > 3) return;
+    const rect = container.getBoundingClientRect();
+    brainMouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+    brainMouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+    brainRaycaster.setFromCamera(brainMouse, brainCamera);
+    
+    const clickable = brainPartsMeshes.filter(m => m.userData.isClickZone);
+    const hits = brainRaycaster.intersectObjects(clickable, false);
+    
+    if (hits.length > 0) {
+      const partKey = hits[0].object.userData.partKey;
+      brainActivePart = partKey;
+      selectBrainPart(partKey);
     }
   });
 
@@ -645,7 +680,6 @@ function setupBrainEvents(container) {
     brainPrevMouse.y = e.touches[0].clientY;
   }, { passive: true });
 }
-
 function selectBrainPart(key) {
   const part = BRAIN_PARTS[key];
   if (!part) return;
@@ -709,8 +743,12 @@ function resetBrainView() {
   
   brainPartsMeshes.forEach(m => {
     if (m.userData.isColorZone) {
-      m.material.opacity = m.userData.baseOpacity;
-      m.material.emissiveIntensity = m.userData.baseEmissive;
+      m.material.opacity = 0.9;
+      m.material.emissiveIntensity = 0.5;
+      m.scale.set(m.userData.baseScale[0], m.userData.baseScale[1], m.userData.baseScale[2]);
+    }
+    if (m.userData.isGlow) {
+      m.material.opacity = 0.35;
       m.scale.set(m.userData.baseScale[0], m.userData.baseScale[1], m.userData.baseScale[2]);
     }
   });
