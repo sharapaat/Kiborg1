@@ -763,7 +763,7 @@ function initHuman3D() {
 
   humanScene = new THREE.Scene();
   humanCamera = new THREE.PerspectiveCamera(45, w / h, 0.1, 1000);
-  humanCamera.position.set(0, 0, 5);
+  humanCamera.position.set(0, 0, 8);   // ← 5 → 8 (алысырақ)
 
   humanRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   humanRenderer.setSize(w, h);
@@ -814,14 +814,15 @@ function initHuman3D() {
       (gltf) => {
         humanModel = gltf.scene;
         
-        const box = new THREE.Box3().setFromObject(humanModel);
+                const box = new THREE.Box3().setFromObject(humanModel);
         const center = box.getCenter(new THREE.Vector3());
         const size = box.getSize(new THREE.Vector3());
 
         humanModel.position.sub(center);
+        humanModel.position.y -= 0.2;
 
         const maxDim = Math.max(size.x, size.y, size.z);
-        const scale = 3.5 / maxDim;
+        const scale = 2.0 / maxDim;
         humanModel.scale.setScalar(scale);
 
         humanModel.traverse((child) => {
@@ -915,7 +916,7 @@ function initHuman3D() {
       });
       const dot = new THREE.Mesh(dotGeo, dotMat);
       dot.position.set(pos[0], pos[1], pos[2]);
-      dot.scale.set(0.09, 0.09, 0.09);
+      dot.scale.set(0.06, 0.06, 0.06);
       dot.renderOrder = 999;
       dot.userData = { 
         partKey: key, 
@@ -936,7 +937,7 @@ function initHuman3D() {
       });
       const glow = new THREE.Mesh(glowGeo, glowMat);
       glow.position.set(pos[0], pos[1], pos[2]);
-      glow.scale.set(0.16, 0.16, 0.16);
+      glow.scale.set(0.11, 0.11, 0.11);
       glow.renderOrder = 998;
       glow.userData = { 
         partKey: key, 
@@ -956,7 +957,7 @@ function initHuman3D() {
       });
       const clickZone = new THREE.Mesh(clickGeo, clickMat);
       clickZone.position.set(pos[0], pos[1], pos[2]);
-      clickZone.scale.set(0.22, 0.22, 0.22);
+      clickZone.scale.set(0.15, 0.15, 0.15);
       clickZone.userData = { partKey: key, isClickZone: true };
       humanGroup.add(clickZone);
       humanPartsMeshes.push(clickZone);
