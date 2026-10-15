@@ -692,7 +692,7 @@ body { overflow-x: hidden; }
   position: relative;
   border: 1px solid var(--border);
   border-radius: 20px;
-  background: linear-gradient(135deg, #ffffff 0%, #f0f7ff 50%, #faf5ff 100%);
+  background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 50%, #ede9fe 100%);
   overflow: hidden;
   cursor: grab;
   box-shadow: var(--shadow);
