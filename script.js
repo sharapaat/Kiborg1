@@ -796,7 +796,7 @@ function initHuman3D() {
   loaderScript.onerror = () => showHumanError();
   document.head.appendChild(loaderScript);
 
-  function loadHumanModel() {
+   function loadHumanModel() {
     const loader = new THREE.GLTFLoader();
 
     document.getElementById('humanInfo').innerHTML = `
@@ -804,6 +804,8 @@ function initHuman3D() {
         <div class="info-placeholder-icon" style="animation: brainPulse 1.5s infinite;">🧑</div>
         <h3>Адам моделі жүктелуде...</h3>
         <p>male_full_body_anatomy.glb файлы оқылуда</p>
+        <p style="color: #2563eb; font-weight: bold; margin-top: 10px;" id="humanProgress">0%</p>
+        <p style="font-size: 0.75rem; color: #64748b;">65 MB — 2-3 минут күтуі мүмкін</p>
       </div>
     `;
 
@@ -842,7 +844,24 @@ function initHuman3D() {
         console.log('✅ Адам моделі жүктелді!');
       },
       (xhr) => {
-        if (xhr.total) console.log('Адам: ' + Math.floor((xhr.loaded / xhr.total) * 100) + '%');
+        // ⭐ ЖҮКТЕЛУ ИНДИКАТОРЫ
+        if (xhr.total) {
+          const percent = Math.floor((xhr.loaded / xhr.total) * 100);
+          const loadedMB = (xhr.loaded / 1024 / 1024).toFixed(1);
+          const totalMB = (xhr.total / 1024 / 1024).toFixed(1);
+          const progressEl = document.getElementById('humanProgress');
+          if (progressEl) {
+            progressEl.textContent = percent + '% (' + loadedMB + ' / ' + totalMB + ' MB)';
+          }
+          console.log('Адам: ' + percent + '% — ' + loadedMB + ' MB / ' + totalMB + ' MB');
+        } else {
+          const loadedMB = (xhr.loaded / 1024 / 1024).toFixed(1);
+          const progressEl = document.getElementById('humanProgress');
+          if (progressEl) {
+            progressEl.textContent = loadedMB + ' MB жүктелді...';
+          }
+          console.log('Адам: ' + loadedMB + ' MB');
+        }
       },
       (error) => {
         console.error('Адам моделі жүктелмеді:', error);
