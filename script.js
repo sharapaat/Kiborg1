@@ -763,7 +763,7 @@ function initHuman3D() {
 
   humanScene = new THREE.Scene();
   humanCamera = new THREE.PerspectiveCamera(45, w / h, 0.1, 1000);
-  humanCamera.position.set(0, 0, 8);   // ← 5 → 8 (алысырақ)
+  humanCamera.position.set(0, 0, 6);   // ← 8 → 6 (жақынырақ)
 
   humanRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   humanRenderer.setSize(w, h);
@@ -796,7 +796,7 @@ function initHuman3D() {
   loaderScript.onerror = () => showHumanError();
   document.head.appendChild(loaderScript);
 
-   function loadHumanModel() {
+  function loadHumanModel() {
     const loader = new THREE.GLTFLoader();
 
     document.getElementById('humanInfo').innerHTML = `
@@ -814,7 +814,7 @@ function initHuman3D() {
       (gltf) => {
         humanModel = gltf.scene;
         
-                const box = new THREE.Box3().setFromObject(humanModel);
+        const box = new THREE.Box3().setFromObject(humanModel);
         const center = box.getCenter(new THREE.Vector3());
         const size = box.getSize(new THREE.Vector3());
 
@@ -822,7 +822,7 @@ function initHuman3D() {
         humanModel.position.y -= 0.2;
 
         const maxDim = Math.max(size.x, size.y, size.z);
-        const scale = 2.0 / maxDim;
+        const scale = 3.0 / maxDim;   // ← 2.0 → 3.0 (үлкенірек)
         humanModel.scale.setScalar(scale);
 
         humanModel.traverse((child) => {
@@ -845,7 +845,6 @@ function initHuman3D() {
         console.log('✅ Адам моделі жүктелді!');
       },
       (xhr) => {
-        // ⭐ ЖҮКТЕЛУ ИНДИКАТОРЫ
         if (xhr.total) {
           const percent = Math.floor((xhr.loaded / xhr.total) * 100);
           const loadedMB = (xhr.loaded / 1024 / 1024).toFixed(1);
@@ -861,7 +860,6 @@ function initHuman3D() {
           if (progressEl) {
             progressEl.textContent = loadedMB + ' MB жүктелді...';
           }
-          console.log('Адам: ' + loadedMB + ' MB');
         }
       },
       (error) => {
@@ -916,12 +914,12 @@ function initHuman3D() {
       });
       const dot = new THREE.Mesh(dotGeo, dotMat);
       dot.position.set(pos[0], pos[1], pos[2]);
-      dot.scale.set(0.06, 0.06, 0.06);
+      dot.scale.set(0.08, 0.08, 0.08);
       dot.renderOrder = 999;
       dot.userData = { 
         partKey: key, 
         isDot: true,
-        baseScale: [0.09, 0.09, 0.09]
+        baseScale: [0.08, 0.08, 0.08]
       };
       humanGroup.add(dot);
       humanPartsMeshes.push(dot);
@@ -937,12 +935,12 @@ function initHuman3D() {
       });
       const glow = new THREE.Mesh(glowGeo, glowMat);
       glow.position.set(pos[0], pos[1], pos[2]);
-      glow.scale.set(0.11, 0.11, 0.11);
+      glow.scale.set(0.15, 0.15, 0.15);
       glow.renderOrder = 998;
       glow.userData = { 
         partKey: key, 
         isGlow: true,
-        baseScale: [0.16, 0.16, 0.16]
+        baseScale: [0.15, 0.15, 0.15]
       };
       humanGroup.add(glow);
       humanPartsMeshes.push(glow);
@@ -957,7 +955,7 @@ function initHuman3D() {
       });
       const clickZone = new THREE.Mesh(clickGeo, clickMat);
       clickZone.position.set(pos[0], pos[1], pos[2]);
-      clickZone.scale.set(0.15, 0.15, 0.15);
+      clickZone.scale.set(0.2, 0.2, 0.2);
       clickZone.userData = { partKey: key, isClickZone: true };
       humanGroup.add(clickZone);
       humanPartsMeshes.push(clickZone);
