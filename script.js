@@ -154,7 +154,7 @@ document.querySelectorAll('.side-link').forEach(link => {
 });
 
 /* ============================================================
-   МИ 3D МОДЕЛІ — 5 ТҮСТІ НҮКТЕ (МИ БЕТІНІҢ СЫРТЫНДА)
+   МИ 3D МОДЕЛІ
 ============================================================ */
 let brainScene, brainCamera, brainRenderer, brainGroup;
 let brainIsDragging = false;
@@ -304,7 +304,6 @@ function initBrain3D() {
     );
   }
 
-  // ============ 5 ТҮСТІ НҮКТЕ — МИ БЕТІНІҢ СЫРТЫНДА ============
   function createBrainDots() {
     brainPartsMeshes = [];
 
@@ -319,11 +318,7 @@ function initBrain3D() {
     const sy = (max.y - min.y);
     const sz = (max.z - min.z);
 
-    console.log('Ми центрі:', cx.toFixed(2), cy.toFixed(2), cz.toFixed(2));
-    console.log('Ми өлшемі:', sx.toFixed(2), sy.toFixed(2), sz.toFixed(2));
-
-    // === НҮКТЕЛЕР МИ БЕТІНІҢ СЫРТЫНДА (0.5 = ми жарты өлшемінен тыс) ===
-        const parts = {
+    const parts = {
       frontal:    { x: -0.38, y: 0.05, z: 0.1 },
       parietal:   { x: 0.02, y: 0.38, z: 0.05 },
       temporal:   { x: -0.05, y: -0.38, z: 0.2 },
@@ -341,7 +336,6 @@ function initBrain3D() {
         cz + sz * p.z
       ];
 
-      // === 1) НҮКТЕ ===
       const dotGeo = new THREE.SphereGeometry(1, 32, 32);
       const dotMat = new THREE.MeshPhongMaterial({
         color: part.color,
@@ -365,7 +359,6 @@ function initBrain3D() {
       brainGroup.add(dot);
       brainPartsMeshes.push(dot);
 
-      // === 2) GLOW ===
       const glowGeo = new THREE.SphereGeometry(1, 20, 20);
       const glowMat = new THREE.MeshBasicMaterial({
         color: part.color,
@@ -387,7 +380,6 @@ function initBrain3D() {
       brainGroup.add(glow);
       brainPartsMeshes.push(glow);
 
-      // === 3) CLICK ZONE ===
       const clickGeo = new THREE.SphereGeometry(1, 16, 16);
       const clickMat = new THREE.MeshBasicMaterial({
         color: part.color,
@@ -402,8 +394,6 @@ function initBrain3D() {
       clickZone.userData = { partKey: key, isClickZone: true };
       brainGroup.add(clickZone);
       brainPartsMeshes.push(clickZone);
-
-      console.log(`${key} → [${pos.map(v => v.toFixed(2)).join(', ')}]`);
     });
   }
 
@@ -706,7 +696,7 @@ function resetBrainView() {
 function toggleBrainRotate() { brainAutoRotate = !brainAutoRotate; }
 
 /* ============================================================
-   АДАМ 3D МОДЕЛІ
+   АДАМ 3D МОДЕЛІ — male_full_body_anatomy.glb
 ============================================================ */
 let humanScene, humanCamera, humanRenderer, humanGroup;
 let humanIsDragging = false;
@@ -716,6 +706,9 @@ let humanCurrentRot = { x: 0, y: 0 };
 let humanAutoRotate = true;
 let humanPartsMeshes = [];
 let humanRaycaster, humanMouse;
+let humanModel = null;
+let humanHovered = null;
+let humanActivePart = null;
 
 const HUMAN_PARTS = {
   eye: {
@@ -723,35 +716,40 @@ const HUMAN_PARTS = {
     desc: 'Көру мүшесі. Жарықты қабылдап, миға сигнал жібереді.',
     implant: 'Argus II — жасанды торлы қабық. 60 электрод арқылы көру мүмкіндігін қайтарады.',
     price: '$150,000',
-    success: '78%'
+    success: '78%',
+    color: 0x4dc3eb
   },
   ear: {
     name: 'Құлақ', en: 'Ear', icon: '👂',
     desc: 'Есту мүшесі. Дыбыс толқындарын қабылдайды.',
     implant: 'Cochlear Implant — 1978 жылдан бері қолданылады. 1 млн+ адамға орнатылған.',
     price: '$30,000',
-    success: '95%'
+    success: '95%',
+    color: 0x7ed321
   },
   hand: {
     name: 'Қол', en: 'Hand', icon: '✋',
     desc: 'Сипап сезу мүшесі. Температура, ауырсыну, қысымды қабылдайды.',
     implant: 'Bionic Arm — ми сигналдарымен басқарылады. 26 градус еркіндік.',
     price: '$100,000',
-    success: '88%'
+    success: '88%',
+    color: 0xf5a623
   },
   heart: {
     name: 'Жүрек', en: 'Heart', icon: '❤️',
     desc: 'Қан айналым жүйесінің негізгі мүшесі.',
     implant: 'Artificial Heart (SynCardia) — толық жасанды жүрек. Күнде 100,000 соғыс.',
     price: '$150,000',
-    success: '70%'
+    success: '70%',
+    color: 0xec4877
   },
   leg: {
     name: 'Аяқ', en: 'Leg', icon: '🦵',
     desc: 'Қозғалыс мүшесі. Жүру, жүгіру, секіру.',
     implant: 'Bionic Leg — қозғалысты қалпына келтіреді. Спортқа жарамды.',
     price: '$80,000',
-    success: '90%'
+    success: '90%',
+    color: 0x9b59b6
   }
 };
 
@@ -765,101 +763,217 @@ function initHuman3D() {
 
   humanScene = new THREE.Scene();
   humanCamera = new THREE.PerspectiveCamera(45, w / h, 0.1, 1000);
-  humanCamera.position.set(0, 0.5, 6);
+  humanCamera.position.set(0, 0, 5);
 
   humanRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   humanRenderer.setSize(w, h);
   humanRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  humanRenderer.outputEncoding = THREE.sRGBEncoding;
+  humanRenderer.toneMapping = THREE.ACESFilmicToneMapping;
+  humanRenderer.toneMappingExposure = 1.1;
   container.appendChild(humanRenderer.domElement);
 
-  humanScene.add(new THREE.AmbientLight(0xffffff, 0.8));
-
-  const l1 = new THREE.DirectionalLight(0xffffff, 1);
-  l1.position.set(5, 5, 5);
-  humanScene.add(l1);
-
-  const l2 = new THREE.DirectionalLight(0x88ccff, 0.5);
-  l2.position.set(-5, 3, 3);
-  humanScene.add(l2);
+  humanScene.add(new THREE.AmbientLight(0xffffff, 0.9));
+  const key = new THREE.DirectionalLight(0xffffff, 1.4);
+  key.position.set(5, 5, 5);
+  humanScene.add(key);
+  const fill = new THREE.DirectionalLight(0xcce5ff, 0.7);
+  fill.position.set(-5, 3, 3);
+  humanScene.add(fill);
+  const rim = new THREE.DirectionalLight(0xffccdd, 0.5);
+  rim.position.set(0, -3, -5);
+  humanScene.add(rim);
+  const top = new THREE.DirectionalLight(0xffffff, 0.6);
+  top.position.set(0, 8, 0);
+  humanScene.add(top);
 
   humanGroup = new THREE.Group();
   humanScene.add(humanGroup);
 
-  const skinMat = new THREE.MeshPhongMaterial({
-    color: 0xf0d0b8,
-    shininess: 30,
-    flatShading: false
-  });
+  const loaderScript = document.createElement('script');
+  loaderScript.src = 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js';
+  loaderScript.onload = () => loadHumanModel();
+  loaderScript.onerror = () => showHumanError();
+  document.head.appendChild(loaderScript);
 
-  const headGeo = new THREE.SphereGeometry(0.42, 32, 32);
-  const head = new THREE.Mesh(headGeo, skinMat);
-  head.position.y = 1.9;
-  head.scale.set(0.95, 1.1, 0.95);
-  humanGroup.add(head);
+  function loadHumanModel() {
+    const loader = new THREE.GLTFLoader();
 
-  const neckGeo = new THREE.CylinderGeometry(0.13, 0.15, 0.25, 20);
-  const neck = new THREE.Mesh(neckGeo, skinMat);
-  neck.position.y = 1.45;
-  humanGroup.add(neck);
+    document.getElementById('humanInfo').innerHTML = `
+      <div class="info-placeholder">
+        <div class="info-placeholder-icon" style="animation: brainPulse 1.5s infinite;">🧑</div>
+        <h3>Адам моделі жүктелуде...</h3>
+        <p>male_full_body_anatomy.glb файлы оқылуда</p>
+      </div>
+    `;
 
-  const torsoGeo = new THREE.CylinderGeometry(0.5, 0.55, 1.5, 24);
-  const torso = new THREE.Mesh(torsoGeo, skinMat);
-  torso.position.y = 0.55;
-  humanGroup.add(torso);
+    loader.load(
+      'male_full_body_anatomy.glb',
+      (gltf) => {
+        humanModel = gltf.scene;
+        
+        const box = new THREE.Box3().setFromObject(humanModel);
+        const center = box.getCenter(new THREE.Vector3());
+        const size = box.getSize(new THREE.Vector3());
 
-  const armGeo = new THREE.CylinderGeometry(0.13, 0.11, 1.4, 16);
-  const leftArm = new THREE.Mesh(armGeo, skinMat);
-  leftArm.position.set(-0.65, 0.5, 0);
-  leftArm.rotation.z = 0.15;
-  humanGroup.add(leftArm);
-  const rightArm = new THREE.Mesh(armGeo, skinMat);
-  rightArm.position.set(0.65, 0.5, 0);
-  rightArm.rotation.z = -0.15;
-  humanGroup.add(rightArm);
+        humanModel.position.sub(center);
 
-  const legGeo = new THREE.CylinderGeometry(0.16, 0.14, 1.5, 16);
-  const leftLeg = new THREE.Mesh(legGeo, skinMat);
-  leftLeg.position.set(-0.22, -1.2, 0);
-  humanGroup.add(leftLeg);
-  const rightLeg = new THREE.Mesh(legGeo, skinMat);
-  rightLeg.position.set(0.22, -1.2, 0);
-  humanGroup.add(rightLeg);
+        const maxDim = Math.max(size.x, size.y, size.z);
+        const scale = 3.5 / maxDim;
+        humanModel.scale.setScalar(scale);
 
-  humanPartsMeshes = [];
+        humanModel.traverse((child) => {
+          if (child.isMesh) {
+            child.material.side = THREE.DoubleSide;
+            if (child.material.map) {
+              child.material.map.encoding = THREE.sRGBEncoding;
+            }
+            if (child.material.color) {
+              child.material.color.multiplyScalar(1.05);
+            }
+          }
+        });
 
-  const partMarkers = [
-    { key: 'eye', pos: [0, 1.95, 0.4], color: 0x4a90e2 },
-    { key: 'ear', pos: [0.42, 1.9, 0], color: 0x7ed321 },
-    { key: 'hand', pos: [-0.85, -0.2, 0], color: 0xf5a623 },
-    { key: 'heart', pos: [0.15, 0.9, 0.35], color: 0xe94b6f },
-    { key: 'leg', pos: [0.22, -1.8, 0], color: 0x9b59b6 }
-  ];
+        humanGroup.add(humanModel);
 
-  partMarkers.forEach(pm => {
-    const markerGeo = new THREE.SphereGeometry(0.12, 20, 20);
-    const markerMat = new THREE.MeshPhongMaterial({
-      color: pm.color,
-      emissive: pm.color,
-      emissiveIntensity: 0.6,
-      shininess: 80
+        createHumanDots();
+        addHumanPulses();
+        resetHumanInfoPanel();
+        console.log('✅ Адам моделі жүктелді!');
+      },
+      (xhr) => {
+        if (xhr.total) console.log('Адам: ' + Math.floor((xhr.loaded / xhr.total) * 100) + '%');
+      },
+      (error) => {
+        console.error('Адам моделі жүктелмеді:', error);
+        showHumanError();
+      }
+    );
+  }
+
+  function createHumanDots() {
+    humanPartsMeshes = [];
+
+    const bbox = new THREE.Box3().setFromObject(humanModel);
+    const min = bbox.min;
+    const max = bbox.max;
+    
+    const cx = (min.x + max.x) / 2;
+    const cy = (min.y + max.y) / 2;
+    const cz = (min.z + max.z) / 2;
+    const sx = (max.x - min.x);
+    const sy = (max.y - min.y);
+    const sz = (max.z - min.z);
+
+    const parts = {
+      eye:   { x: 0,     y: 0.42,  z: 0.3 },
+      ear:   { x: 0.3,   y: 0.4,   z: 0.0 },
+      hand:  { x: -0.42, y: -0.05, z: 0.05 },
+      heart: { x: 0.08,  y: 0.15,  z: 0.15 },
+      leg:   { x: 0.12,  y: -0.45, z: 0.0 }
+    };
+
+    Object.keys(parts).forEach(key => {
+      const part = HUMAN_PARTS[key];
+      const p = parts[key];
+
+      const pos = [
+        cx + sx * p.x,
+        cy + sy * p.y,
+        cz + sz * p.z
+      ];
+
+      const dotGeo = new THREE.SphereGeometry(1, 32, 32);
+      const dotMat = new THREE.MeshPhongMaterial({
+        color: part.color,
+        emissive: part.color,
+        emissiveIntensity: 1.5,
+        shininess: 120,
+        transparent: true,
+        opacity: 1.0,
+        depthTest: false,
+        depthWrite: false
+      });
+      const dot = new THREE.Mesh(dotGeo, dotMat);
+      dot.position.set(pos[0], pos[1], pos[2]);
+      dot.scale.set(0.09, 0.09, 0.09);
+      dot.renderOrder = 999;
+      dot.userData = { 
+        partKey: key, 
+        isDot: true,
+        baseScale: [0.09, 0.09, 0.09]
+      };
+      humanGroup.add(dot);
+      humanPartsMeshes.push(dot);
+
+      const glowGeo = new THREE.SphereGeometry(1, 20, 20);
+      const glowMat = new THREE.MeshBasicMaterial({
+        color: part.color,
+        transparent: true,
+        opacity: 0.5,
+        depthTest: false,
+        depthWrite: false,
+        side: THREE.BackSide
+      });
+      const glow = new THREE.Mesh(glowGeo, glowMat);
+      glow.position.set(pos[0], pos[1], pos[2]);
+      glow.scale.set(0.16, 0.16, 0.16);
+      glow.renderOrder = 998;
+      glow.userData = { 
+        partKey: key, 
+        isGlow: true,
+        baseScale: [0.16, 0.16, 0.16]
+      };
+      humanGroup.add(glow);
+      humanPartsMeshes.push(glow);
+
+      const clickGeo = new THREE.SphereGeometry(1, 16, 16);
+      const clickMat = new THREE.MeshBasicMaterial({
+        color: part.color,
+        transparent: true,
+        opacity: 0.0,
+        depthTest: false,
+        depthWrite: false
+      });
+      const clickZone = new THREE.Mesh(clickGeo, clickMat);
+      clickZone.position.set(pos[0], pos[1], pos[2]);
+      clickZone.scale.set(0.22, 0.22, 0.22);
+      clickZone.userData = { partKey: key, isClickZone: true };
+      humanGroup.add(clickZone);
+      humanPartsMeshes.push(clickZone);
     });
-    const marker = new THREE.Mesh(markerGeo, markerMat);
-    marker.position.set(...pm.pos);
-    marker.userData = { partKey: pm.key };
-    humanGroup.add(marker);
-    humanPartsMeshes.push(marker);
+  }
 
-    const haloGeo = new THREE.SphereGeometry(0.2, 16, 16);
-    const haloMat = new THREE.MeshBasicMaterial({
-      color: pm.color,
-      transparent: true,
-      opacity: 0.2,
-      side: THREE.BackSide
-    });
-    const halo = new THREE.Mesh(haloGeo, haloMat);
-    halo.position.set(...pm.pos);
-    humanGroup.add(halo);
-  });
+  function showHumanError() {
+    document.getElementById('humanInfo').innerHTML = `
+      <div class="info-placeholder">
+        <div class="info-placeholder-icon">⚠️</div>
+        <h3>Модель жүктелмеді</h3>
+        <p style="color: #dc2626;">male_full_body_anatomy.glb файлы табылмады</p>
+      </div>
+    `;
+  }
+
+  function addHumanPulses() {
+    const pulseGroup = new THREE.Group();
+    humanGroup.add(pulseGroup);
+    for (let i = 0; i < 20; i++) {
+      const geo = new THREE.SphereGeometry(0.02, 8, 8);
+      const mat = new THREE.MeshBasicMaterial({
+        color: 0x00aaff, transparent: true, opacity: 0.9
+      });
+      const pulse = new THREE.Mesh(geo, mat);
+      pulse.userData = {
+        baseAngle: Math.random() * Math.PI * 2,
+        speed: 0.6 + Math.random() * 1.2,
+        radius: 1.0 + Math.random() * 0.6,
+        phase: Math.random() * Math.PI * 2,
+        yOffset: (Math.random() - 0.5) * 2.5
+      };
+      pulseGroup.add(pulse);
+    }
+    humanGroup.userData.pulseGroup = pulseGroup;
+  }
 
   humanRaycaster = new THREE.Raycaster();
   humanMouse = new THREE.Vector2();
@@ -867,27 +981,41 @@ function initHuman3D() {
   setupHumanEvents(container);
 
   const clock = new THREE.Clock();
+
   function animate() {
     requestAnimationFrame(animate);
     const t = clock.getElapsedTime();
 
-    if (humanAutoRotate && !humanIsDragging) humanTargetRot.y += 0.004;
+    if (humanAutoRotate && !humanIsDragging) {
+      humanTargetRot.y += 0.004;
+    }
 
     humanCurrentRot.x += (humanTargetRot.x - humanCurrentRot.x) * 0.08;
     humanCurrentRot.y += (humanTargetRot.y - humanCurrentRot.y) * 0.08;
     humanGroup.rotation.x = humanCurrentRot.x;
     humanGroup.rotation.y = humanCurrentRot.y;
 
-    humanPartsMeshes.forEach((m, i) => {
-      const s = 1 + Math.sin(t * 3 + i) * 0.2;
-      m.scale.setScalar(s);
-    });
-
-    if (!humanIsDragging) {
-      humanRaycaster.setFromCamera(humanMouse, humanCamera);
-      const hits = humanRaycaster.intersectObjects(humanPartsMeshes);
-      document.body.style.cursor = hits.length > 0 ? 'pointer' : '';
+    const pulseGroup = humanGroup.userData.pulseGroup;
+    if (pulseGroup) {
+      pulseGroup.children.forEach((p, i) => {
+        const u = p.userData;
+        const a = t * u.speed + u.baseAngle;
+        p.position.x = Math.cos(a) * u.radius;
+        p.position.y = u.yOffset + Math.sin(a * 2 + u.phase) * 0.3;
+        p.position.z = Math.sin(a) * u.radius;
+        const scale = 0.5 + Math.sin(t * 5 + i) * 0.5;
+        p.scale.setScalar(scale);
+        p.material.opacity = 0.3 + Math.sin(t * 5 + i) * 0.5;
+      });
     }
+
+    humanPartsMeshes.forEach((m, i) => {
+      if (m.userData.isGlow) {
+        const baseS = m.userData.baseScale;
+        const pulse = 1 + Math.sin(t * 2 + i) * 0.18;
+        m.scale.set(baseS[0] * pulse, baseS[1] * pulse, baseS[2] * pulse);
+      }
+    });
 
     humanRenderer.render(humanScene, humanCamera);
   }
@@ -900,6 +1028,42 @@ function initHuman3D() {
     humanCamera.aspect = nw / nh;
     humanCamera.updateProjectionMatrix();
     humanRenderer.setSize(nw, nh);
+  });
+}
+
+function highlightHumanPart(partKey, on) {
+  humanPartsMeshes.forEach(m => {
+    const key = m.userData.partKey;
+    const isHover = (key === partKey && on);
+    const isSelected = (humanActivePart === key);
+    
+    if (m.userData.isDot) {
+      const baseS = m.userData.baseScale;
+      if (isHover) {
+        m.scale.set(baseS[0] * 1.7, baseS[1] * 1.7, baseS[2] * 1.7);
+        m.material.emissiveIntensity = 2.5;
+      } else if (isSelected) {
+        m.scale.set(baseS[0] * 1.5, baseS[1] * 1.5, baseS[2] * 1.5);
+        m.material.emissiveIntensity = 2.0;
+      } else {
+        m.scale.set(baseS[0], baseS[1], baseS[2]);
+        m.material.emissiveIntensity = 1.5;
+      }
+    }
+    
+    if (m.userData.isGlow) {
+      const baseS = m.userData.baseScale;
+      if (isHover) {
+        m.scale.set(baseS[0] * 1.8, baseS[1] * 1.8, baseS[2] * 1.8);
+        m.material.opacity = 0.85;
+      } else if (isSelected) {
+        m.scale.set(baseS[0] * 1.6, baseS[1] * 1.6, baseS[2] * 1.6);
+        m.material.opacity = 0.65;
+      } else {
+        m.scale.set(baseS[0], baseS[1], baseS[2]);
+        m.material.opacity = 0.5;
+      }
+    }
   });
 }
 
@@ -917,15 +1081,47 @@ function setupHumanEvents(container) {
     humanMouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
     humanMouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
 
-    if (!humanIsDragging) return;
-    const dx = e.clientX - humanPrevMouse.x;
-    const dy = e.clientY - humanPrevMouse.y;
-    humanTargetRot.y += dx * 0.008;
-    humanTargetRot.x += dy * 0.008;
-    humanTargetRot.x = Math.max(-0.8, Math.min(0.8, humanTargetRot.x));
-    humanPrevMouse.x = e.clientX;
-    humanPrevMouse.y = e.clientY;
-    humanAutoRotate = false;
+    if (humanIsDragging) {
+      const dx = e.clientX - humanPrevMouse.x;
+      const dy = e.clientY - humanPrevMouse.y;
+      humanTargetRot.y += dx * 0.008;
+      humanTargetRot.x += dy * 0.008;
+      humanTargetRot.x = Math.max(-1.2, Math.min(1.2, humanTargetRot.x));
+      humanPrevMouse.x = e.clientX;
+      humanPrevMouse.y = e.clientY;
+      humanAutoRotate = false;
+      return;
+    }
+
+    humanRaycaster.setFromCamera(humanMouse, humanCamera);
+    const clickable = humanPartsMeshes.filter(m => m.userData.isClickZone);
+    const hits = humanRaycaster.intersectObjects(clickable, false);
+
+    if (hits.length > 0) {
+      const hitKey = hits[0].object.userData.partKey;
+      if (humanHovered !== hitKey) {
+        humanHovered = hitKey;
+        document.body.style.cursor = 'pointer';
+        highlightHumanPart(hitKey, true);
+      }
+    } else if (humanHovered) {
+      humanHovered = null;
+      document.body.style.cursor = '';
+      if (humanActivePart) {
+        highlightHumanPart(humanActivePart, true);
+      } else {
+        humanPartsMeshes.forEach(m => {
+          if (m.userData.isDot) {
+            m.scale.set(m.userData.baseScale[0], m.userData.baseScale[1], m.userData.baseScale[2]);
+            m.material.emissiveIntensity = 1.5;
+          }
+          if (m.userData.isGlow) {
+            m.scale.set(m.userData.baseScale[0], m.userData.baseScale[1], m.userData.baseScale[2]);
+            m.material.opacity = 0.5;
+          }
+        });
+      }
+    }
   });
 
   container.addEventListener('click', e => {
@@ -934,20 +1130,48 @@ function setupHumanEvents(container) {
     humanMouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
     humanMouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
     humanRaycaster.setFromCamera(humanMouse, humanCamera);
-    const hits = humanRaycaster.intersectObjects(humanPartsMeshes);
-    if (hits.length > 0) selectHumanPart(hits[0].object.userData.partKey);
+    
+    const clickable = humanPartsMeshes.filter(m => m.userData.isClickZone);
+    const hits = humanRaycaster.intersectObjects(clickable, false);
+    
+    if (hits.length > 0) {
+      const partKey = hits[0].object.userData.partKey;
+      humanActivePart = partKey;
+      selectHumanPart(partKey);
+    }
   });
 
   container.addEventListener('wheel', e => {
     e.preventDefault();
     const nz = humanCamera.position.z + e.deltaY * 0.005;
-    humanCamera.position.z = Math.max(3, Math.min(10, nz));
+    humanCamera.position.z = Math.max(2, Math.min(10, nz));
   }, { passive: false });
+
+  container.addEventListener('touchstart', e => {
+    humanIsDragging = true;
+    humanPrevMouse.x = e.touches[0].clientX;
+    humanPrevMouse.y = e.touches[0].clientY;
+    humanAutoRotate = false;
+  }, { passive: true });
+
+  container.addEventListener('touchend', () => humanIsDragging = false);
+
+  container.addEventListener('touchmove', e => {
+    if (!humanIsDragging) return;
+    const dx = e.touches[0].clientX - humanPrevMouse.x;
+    const dy = e.touches[0].clientY - humanPrevMouse.y;
+    humanTargetRot.y += dx * 0.008;
+    humanTargetRot.x += dy * 0.008;
+    humanPrevMouse.x = e.touches[0].clientX;
+    humanPrevMouse.y = e.touches[0].clientY;
+  }, { passive: true });
 }
 
 function selectHumanPart(key) {
   const part = HUMAN_PARTS[key];
   if (!part) return;
+  humanActivePart = key;
+  
   document.getElementById('humanInfo').innerHTML = `
     <div class="info-content">
       <div class="info-icon">${part.icon}</div>
@@ -965,6 +1189,33 @@ function selectHumanPart(key) {
       <div class="info-block">
         <div class="info-block-label">📊 ЖЕТІСТІК ДЕҢГЕЙІ</div>
         <div class="info-block-text">${part.success}</div>
+      </div>
+    </div>
+  `;
+  
+  highlightHumanPart(key, true);
+}
+
+function resetHumanInfoPanel() {
+  humanActivePart = null;
+  humanHovered = null;
+  document.getElementById('humanInfo').innerHTML = `
+    <div class="info-placeholder">
+      <div class="info-placeholder-icon">🧑</div>
+      <h3>Мүшені таңдаңыз</h3>
+      <p>Адам денесіндегі түрлі-түсті нүктелерді басып, импланттар туралы біліңіз</p>
+      <div class="brain-parts-list">
+        ${Object.keys(HUMAN_PARTS).map(key => {
+          const p = HUMAN_PARTS[key];
+          const hex = '#' + p.color.toString(16).padStart(6, '0');
+          return `<button class="part-chip" onclick="selectHumanPart('${key}')" style="border-color: ${hex}; color: ${hex};">${p.icon} ${p.name}</button>`;
+        }).join('')}
+      </div>
+      <div style="margin-top: 25px; padding: 16px; background: #f0f7ff; border-radius: 10px; font-size: 0.85rem; text-align: left;">
+        <strong>💡 Қалай қолдану:</strong><br>
+        1. Адамды айналдырыңыз (тышқан)<br>
+        2. Жақындатыңыз (дөңгелек)<br>
+        3. <strong>Түсті нүктені басыңыз</strong>
       </div>
     </div>
   `;
