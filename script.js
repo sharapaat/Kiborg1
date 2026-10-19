@@ -819,7 +819,7 @@ function initHuman3D() {
         const size = box.getSize(new THREE.Vector3());
 
         humanModel.position.sub(center);
-        humanModel.position.y += 0.4; // ← Модельді жоғары көтеру
+        humanModel.position.y -= 2.5; // ← Модельді қаттырақ төмен түсіру
 
         const maxDim = Math.max(size.x, size.y, size.z);
         const scale = 3.0 / maxDim;
