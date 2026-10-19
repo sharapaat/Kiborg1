@@ -819,7 +819,7 @@ function initHuman3D() {
         const size = box.getSize(new THREE.Vector3());
 
         humanModel.position.sub(center);
-        humanModel.position.y -= 1.0;   // ← 0.2 → 1.0 (көбірек төмен)
+       humanModel.position.y -= 2.0;   // ← 0.2 → 1.0 (көбірек төмен)
 
         const maxDim = Math.max(size.x, size.y, size.z);
         const scale = 3.0 / maxDim;   // ← 2.0 → 3.0 (үлкенірек)
@@ -883,12 +883,12 @@ function initHuman3D() {
     const sy = (max.y - min.y);
     const sz = (max.z - min.z);
 
-    const parts = {
-      eye:   { x: 0,     y: 0.38,  z: 0.3 },    // ← 0.42 → 0.38
-      ear:   { x: 0.3,   y: 0.36,  z: 0.0 },    // ← 0.4 → 0.36
-      hand:  { x: -0.42, y: -0.05, z: 0.05 },   // өзгеріссіз
-      heart: { x: 0.08,  y: 0.12,  z: 0.15 },   // ← 0.15 → 0.12
-      leg:   { x: 0.12,  y: -0.42, z: 0.0 }     // ← -0.45 → -0.42
+        const parts = {
+      eye:   { x: 0,     y: 0.27,  z: 0.3 },
+      ear:   { x: 0.3,   y: 0.25,  z: 0.0 },
+      hand:  { x: -0.42, y: -0.20, z: 0.05 },
+      heart: { x: 0.08,  y: 0.00,  z: 0.15 },
+      leg:   { x: 0.12,  y: -0.60, z: 0.0 }
     };
 
     Object.keys(parts).forEach(key => {
