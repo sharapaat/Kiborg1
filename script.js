@@ -763,7 +763,7 @@ function initHuman3D() {
 
   humanScene = new THREE.Scene();
   humanCamera = new THREE.PerspectiveCamera(45, w / h, 0.1, 1000);
-  humanCamera.position.set(0, 0, 6);   // ← 8 → 6 (жақынырақ)
+  humanCamera.position.set(0, 0, 6); // Камера жақындатылды
 
   humanRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   humanRenderer.setSize(w, h);
@@ -819,10 +819,10 @@ function initHuman3D() {
         const size = box.getSize(new THREE.Vector3());
 
         humanModel.position.sub(center);
-       humanModel.position.y -= 2.0;   // ← 0.2 → 1.0 (көбірек төмен)
+        humanModel.position.y -= 2.0; // Модель төмен түсірілді
 
         const maxDim = Math.max(size.x, size.y, size.z);
-        const scale = 3.0 / maxDim;   // ← 2.0 → 3.0 (үлкенірек)
+        const scale = 3.0 / maxDim; 
         humanModel.scale.setScalar(scale);
 
         humanModel.traverse((child) => {
@@ -853,7 +853,6 @@ function initHuman3D() {
           if (progressEl) {
             progressEl.textContent = percent + '% (' + loadedMB + ' / ' + totalMB + ' MB)';
           }
-          console.log('Адам: ' + percent + '% — ' + loadedMB + ' MB / ' + totalMB + ' MB');
         } else {
           const loadedMB = (xhr.loaded / 1024 / 1024).toFixed(1);
           const progressEl = document.getElementById('humanProgress');
@@ -883,12 +882,13 @@ function initHuman3D() {
     const sy = (max.y - min.y);
     const sz = (max.z - min.z);
 
-        const parts = {
-      eye:   { x: 0,     y: 0.27,  z: 0.3 },
-      ear:   { x: 0.3,   y: 0.25,  z: 0.0 },
-      hand:  { x: -0.42, y: -0.20, z: 0.05 },
-      heart: { x: 0.08,  y: 0.00,  z: 0.15 },
-      leg:   { x: 0.12,  y: -0.60, z: 0.0 }
+    // Нүктелер модельге сәйкес төмендетілді
+    const parts = {
+      eye:   { x: 0,     y: 0.15,  z: 0.3 },
+      ear:   { x: 0.3,   y: 0.12,  z: 0.0 },
+      hand:  { x: -0.42, y: -0.25, z: 0.05 },
+      heart: { x: 0.08,  y: -0.10, z: 0.15 },
+      leg:   { x: 0.12,  y: -0.65, z: 0.0 }
     };
 
     Object.keys(parts).forEach(key => {
