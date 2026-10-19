@@ -819,7 +819,7 @@ function initHuman3D() {
         const size = box.getSize(new THREE.Vector3());
 
         humanModel.position.sub(center);
-        humanModel.position.y -= 1.0; // Модель ортада тұрады
+        humanModel.position.y -= 1.0;
 
         const maxDim = Math.max(size.x, size.y, size.z);
         const scale = 3.0 / maxDim;
@@ -883,7 +883,7 @@ function initHuman3D() {
     const sy = (max.y - min.y);
     const sz = (max.z - min.z);
 
-    // ДӘЛ КООРДИНАТАЛАР (денеге сай есептелген)
+    // НҮКТЕЛЕРДІҢ ДӘЛ КООРДИНАТАЛАРЫ
     const parts = {
       eye:   { x: 0,     y: 0.35,  z: 0.15 }, // Көз (бас)
       ear:   { x: 0.15,  y: 0.30,  z: 0.00 }, // Құлақ (бас бүйірі)
