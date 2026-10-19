@@ -819,10 +819,10 @@ function initHuman3D() {
         const size = box.getSize(new THREE.Vector3());
 
         humanModel.position.sub(center);
-        humanModel.position.y -= 1.0;
+       humanModel.position.y -= 2.0;   // ← 0.2 → 1.0 (көбірек төмен)
 
         const maxDim = Math.max(size.x, size.y, size.z);
-        const scale = 3.0 / maxDim;
+        const scale = 3.0 / maxDim;   // ← 2.0 → 3.0 (үлкенірек)
         humanModel.scale.setScalar(scale);
 
         humanModel.traverse((child) => {
@@ -883,13 +883,12 @@ function initHuman3D() {
     const sy = (max.y - min.y);
     const sz = (max.z - min.z);
 
-    // НҮКТЕЛЕРДІҢ ДӘЛ КООРДИНАТАЛАРЫ
-    const parts = {
-      eye:   { x: 0,     y: 0.35,  z: 0.15 }, // Көз (бас)
-      ear:   { x: 0.15,  y: 0.30,  z: 0.00 }, // Құлақ (бас бүйірі)
-      hand:  { x: -0.30, y: -0.05, z: 0.05 }, // Қол (білек)
-      heart: { x: 0.08,  y: 0.15,  z: 0.15 }, // Жүрек (кеуде сол жағы)
-      leg:   { x: 0.12,  y: -0.35, z: 0.05 }  // Аяқ (тізе)
+        const parts = {
+      eye:   { x: 0,     y: 0.27,  z: 0.3 },
+      ear:   { x: 0.3,   y: 0.25,  z: 0.0 },
+      hand:  { x: -0.42, y: -0.20, z: 0.05 },
+      heart: { x: 0.08,  y: 0.00,  z: 0.15 },
+      leg:   { x: 0.12,  y: -0.60, z: 0.0 }
     };
 
     Object.keys(parts).forEach(key => {
@@ -915,12 +914,12 @@ function initHuman3D() {
       });
       const dot = new THREE.Mesh(dotGeo, dotMat);
       dot.position.set(pos[0], pos[1], pos[2]);
-      dot.scale.set(0.06, 0.06, 0.06); // Кішірейтілді
+      dot.scale.set(0.08, 0.08, 0.08);
       dot.renderOrder = 999;
       dot.userData = { 
         partKey: key, 
         isDot: true,
-        baseScale: [0.06, 0.06, 0.06]
+        baseScale: [0.08, 0.08, 0.08]
       };
       humanGroup.add(dot);
       humanPartsMeshes.push(dot);
@@ -936,12 +935,12 @@ function initHuman3D() {
       });
       const glow = new THREE.Mesh(glowGeo, glowMat);
       glow.position.set(pos[0], pos[1], pos[2]);
-      glow.scale.set(0.12, 0.12, 0.12); // Кішірейтілді
+      glow.scale.set(0.15, 0.15, 0.15);
       glow.renderOrder = 998;
       glow.userData = { 
         partKey: key, 
         isGlow: true,
-        baseScale: [0.12, 0.12, 0.12]
+        baseScale: [0.15, 0.15, 0.15]
       };
       humanGroup.add(glow);
       humanPartsMeshes.push(glow);
@@ -956,7 +955,7 @@ function initHuman3D() {
       });
       const clickZone = new THREE.Mesh(clickGeo, clickMat);
       clickZone.position.set(pos[0], pos[1], pos[2]);
-      clickZone.scale.set(0.15, 0.15, 0.15);
+      clickZone.scale.set(0.2, 0.2, 0.2);
       clickZone.userData = { partKey: key, isClickZone: true };
       humanGroup.add(clickZone);
       humanPartsMeshes.push(clickZone);
