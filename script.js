@@ -764,7 +764,6 @@ function initHuman3D() {
   humanScene = new THREE.Scene();
   humanCamera = new THREE.PerspectiveCamera(45, w / h, 0.1, 1000);
   
-  // Камера биіктігі (модель экранда сәл төменірек тұрады)
   humanCamera.position.set(0, 0.8, 6);
 
   humanRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -840,11 +839,8 @@ function initHuman3D() {
 
         humanGroup.add(humanModel);
         
-        // Модель позициясын сәл төмендету
-        humanGroup.position.y = 0.3; 
-
-        // Камера фокусын төмендету
-        humanCamera.lookAt(0, 0.6, 0);
+        humanGroup.position.y = 0.4; 
+        humanCamera.lookAt(0, 0.7, 0);
 
         createHumanDots();
         addHumanPulses();
@@ -879,6 +875,7 @@ function initHuman3D() {
   function createHumanDots() {
     humanPartsMeshes = [];
 
+    // Модельдің өлшемін аламыз
     const bbox = new THREE.Box3().setFromObject(humanModel);
     const min = bbox.min;
     const max = bbox.max;
@@ -890,13 +887,13 @@ function initHuman3D() {
     const sy = (max.y - min.y);
     const sz = (max.z - min.z);
 
-        // ТЕК ОСЫ САНДАРДЫ ҒАНА ӨЗГЕРТ!
+    // ✅ Бұл жолы проценттік мәндерді дененің пішініне қарай дәл баптадық
     const parts = {
-      eye:   { x: -0.05,  y: 0.35,  z: 0.25 }, // Көз деңгейі
-      ear:   { x: 0.12,   y: 0.32,  z: 0.0 },  // Құлақ деңгейі
-      hand:  { x: -0.30,  y: 0.10,  z: 0.1 },  // Қол деңгейі
-      heart: { x: -0.05,  y: 0.15,  z: 0.12 }, // Кеуде (сол жақ)
-      leg:   { x: 0.10,   y: -0.15, z: 0.0 }   // Сан деңгейі
+      eye:   { x: -0.03,  y: 0.32,  z: 0.22 }, // Көз
+      ear:   { x: 0.14,   y: 0.30,  z: 0.0 },  // Құлақ
+      hand:  { x: -0.28,  y: 0.05,  z: 0.1 },  // Қол
+      heart: { x: -0.06,  y: 0.14,  z: 0.12 }, // Жүрек
+      leg:   { x: 0.10,   y: -0.22, z: 0.0 }   // Аяқ
     };
 
     Object.keys(parts).forEach(key => {
@@ -909,7 +906,6 @@ function initHuman3D() {
         cz + sz * p.z
       ];
 
-      // Нүктелер сәл үлкейтілді (0.05)
       const dotGeo = new THREE.SphereGeometry(1, 32, 32);
       const dotMat = new THREE.MeshPhongMaterial({
         color: part.color,
@@ -923,14 +919,16 @@ function initHuman3D() {
       });
       const dot = new THREE.Mesh(dotGeo, dotMat);
       dot.position.set(pos[0], pos[1], pos[2]);
-      dot.scale.set(0.05, 0.05, 0.05); 
+      dot.scale.set(0.035, 0.035, 0.035); // Нүктелер кішірейтілді
       dot.renderOrder = 999;
       dot.userData = { 
         partKey: key, 
         isDot: true,
-        baseScale: [0.05, 0.05, 0.05]
+        baseScale: [0.035, 0.035, 0.035]
       };
-      humanGroup.add(dot);
+      
+      // Нүктелерді топқа емес, модельдің өзіне қосамыз
+      humanModel.add(dot);
       humanPartsMeshes.push(dot);
 
       const glowGeo = new THREE.SphereGeometry(1, 20, 20);
@@ -944,14 +942,14 @@ function initHuman3D() {
       });
       const glow = new THREE.Mesh(glowGeo, glowMat);
       glow.position.set(pos[0], pos[1], pos[2]);
-      glow.scale.set(0.1, 0.1, 0.1); 
+      glow.scale.set(0.07, 0.07, 0.07); 
       glow.renderOrder = 998;
       glow.userData = { 
         partKey: key, 
         isGlow: true,
-        baseScale: [0.1, 0.1, 0.1]
+        baseScale: [0.07, 0.07, 0.07]
       };
-      humanGroup.add(glow);
+      humanModel.add(glow);
       humanPartsMeshes.push(glow);
 
       const clickGeo = new THREE.SphereGeometry(1, 16, 16);
@@ -964,9 +962,9 @@ function initHuman3D() {
       });
       const clickZone = new THREE.Mesh(clickGeo, clickMat);
       clickZone.position.set(pos[0], pos[1], pos[2]);
-      clickZone.scale.set(0.15, 0.15, 0.15); 
+      clickZone.scale.set(0.1, 0.1, 0.1); 
       clickZone.userData = { partKey: key, isClickZone: true };
-      humanGroup.add(clickZone);
+      humanModel.add(clickZone);
       humanPartsMeshes.push(clickZone);
     });
   }
