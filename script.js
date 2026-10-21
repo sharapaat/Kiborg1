@@ -764,8 +764,8 @@ function initHuman3D() {
   humanScene = new THREE.Scene();
   humanCamera = new THREE.PerspectiveCamera(45, w / h, 0.1, 1000);
   
-  // КАМЕРАНЫ ТӨМЕН ТҮСІРУ (модель экранда жоғары көрінеді)
-  humanCamera.position.set(0, -1.5, 6);
+  // Камера дәл ортаға қарайды
+  humanCamera.position.set(0, 0, 6);
 
   humanRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   humanRenderer.setSize(w, h);
@@ -840,8 +840,7 @@ function initHuman3D() {
 
         humanGroup.add(humanModel);
 
-        // Камераны жаңа биіктікке бағыттау
-        humanCamera.lookAt(0, -1.5, 0);
+        humanCamera.lookAt(0, 0, 0);
 
         createHumanDots();
         addHumanPulses();
