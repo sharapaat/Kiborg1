@@ -765,7 +765,7 @@ function initHuman3D() {
   humanCamera = new THREE.PerspectiveCamera(45, w / h, 0.1, 1000);
   
   // Камераны модельдің ортасына қарай бағыттау
-  humanCamera.position.set(0, 0.8, 6);
+  humanCamera.position.set(0, 1.4, 6);
 
   humanRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   humanRenderer.setSize(w, h);
@@ -844,7 +844,7 @@ function initHuman3D() {
         humanGroup.position.y = 0.5; 
 
         // Камера фокусын модельдің ортасына бағыттаймыз
-        humanCamera.lookAt(0, 0.8, 0);
+        humanCamera.lookAt(0, 1.4, 0);
 
         createHumanDots();
         addHumanPulses();
