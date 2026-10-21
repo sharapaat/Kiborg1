@@ -840,11 +840,11 @@ function initHuman3D() {
 
         humanGroup.add(humanModel);
         
-        // Бүкіл топты сәл жоғары көтеру
-        humanGroup.position.y = 0.5; 
+        // ✅ МОДЕЛЬДІ СӘЛ ТӨМЕН ТҮСІРУ (0.5 → 0.15)
+        humanGroup.position.y = 0.15; 
 
-        // Камераны сол биіктікке бағыттау
-        humanCamera.lookAt(0, 1.2, 0);
+        // ✅ КАМЕРА ФОКУСЫН СӘЙКЕСІНШЕ ТӨМЕНДЕТУ (1.2 → 0.85)
+        humanCamera.lookAt(0, 0.85, 0);
 
         createHumanDots();
         addHumanPulses();
