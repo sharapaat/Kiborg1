@@ -764,8 +764,8 @@ function initHuman3D() {
   humanScene = new THREE.Scene();
   humanCamera = new THREE.PerspectiveCamera(45, w / h, 0.1, 1000);
   
-  // ✅ КАМЕРА СӘЛ ТӨМЕНДЕТІЛДІ
-  humanCamera.position.set(0, 0.6, 6);
+  // Камера биіктігі (адам экранда төменірек тұрады)
+  humanCamera.position.set(0, 0.8, 6);
 
   humanRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   humanRenderer.setSize(w, h);
@@ -840,9 +840,9 @@ function initHuman3D() {
 
         humanGroup.add(humanModel);
         
-        // ✅ МОДЕЛЬ ПОЗИЦИЯСЫ ТӨМЕНДЕТІЛДІ
-        humanGroup.position.y = 0.3; 
-        humanCamera.lookAt(0, 0.6, 0);
+        // Модель позициясы
+        humanGroup.position.y = 0.4; 
+        humanCamera.lookAt(0, 0.7, 0);
 
         createHumanDots();
         addHumanPulses();
@@ -888,13 +888,13 @@ function initHuman3D() {
     const sy = (max.y - min.y);
     const sz = (max.z - min.z);
 
-    // ✅ НҮКТЕЛЕРДІҢ КООРДИНАТАЛАРЫ ДЕНЕГЕ ДӘЛ КЕЛЕТІНДЕЙ ЕТІП ТҮЗЕТІЛДІ
+    // Нүктелердің дәл орны (көз, құлақ, жүрек, қол, аяқ)
     const parts = {
-      eye:   { x: -0.05,  y: 0.28,  z: 0.15 }, // Көз (бас жақ)
-      ear:   { x: 0.15,   y: 0.25,  z: 0.0 },  // Құлақ (бастың бүйірі)
-      hand:  { x: -0.35,  y: 0.05,  z: 0.1 },  // Қол (қол деңгейі)
-      heart: { x: -0.05,  y: 0.12,  z: 0.1 },  // Жүрек (кеуде ортасы, сол жақ)
-      leg:   { x: 0.10,   y: -0.25, z: 0.0 }   // Аяқ (аяқ деңгейі)
+      eye:   { x: -0.08,  y: 0.30,  z: 0.20 }, 
+      ear:   { x: 0.18,   y: 0.28,  z: 0.0 },  
+      hand:  { x: -0.35,  y: 0.02,  z: 0.1 },  
+      heart: { x: -0.06,  y: 0.12,  z: 0.12 }, 
+      leg:   { x: 0.12,   y: -0.30, z: 0.0 }   
     };
 
     Object.keys(parts).forEach(key => {
@@ -907,7 +907,7 @@ function initHuman3D() {
         cz + sz * p.z
       ];
 
-      // Нүктелер кішірейтілді
+      // ✅ Нүктелер сәл үлкейтілді (0.05)
       const dotGeo = new THREE.SphereGeometry(1, 32, 32);
       const dotMat = new THREE.MeshPhongMaterial({
         color: part.color,
@@ -921,12 +921,12 @@ function initHuman3D() {
       });
       const dot = new THREE.Mesh(dotGeo, dotMat);
       dot.position.set(pos[0], pos[1], pos[2]);
-      dot.scale.set(0.04, 0.04, 0.04); 
+      dot.scale.set(0.05, 0.05, 0.05); 
       dot.renderOrder = 999;
       dot.userData = { 
         partKey: key, 
         isDot: true,
-        baseScale: [0.04, 0.04, 0.04]
+        baseScale: [0.05, 0.05, 0.05]
       };
       humanGroup.add(dot);
       humanPartsMeshes.push(dot);
@@ -942,12 +942,12 @@ function initHuman3D() {
       });
       const glow = new THREE.Mesh(glowGeo, glowMat);
       glow.position.set(pos[0], pos[1], pos[2]);
-      glow.scale.set(0.08, 0.08, 0.08); 
+      glow.scale.set(0.1, 0.1, 0.1); 
       glow.renderOrder = 998;
       glow.userData = { 
         partKey: key, 
         isGlow: true,
-        baseScale: [0.08, 0.08, 0.08]
+        baseScale: [0.1, 0.1, 0.1]
       };
       humanGroup.add(glow);
       humanPartsMeshes.push(glow);
@@ -962,7 +962,7 @@ function initHuman3D() {
       });
       const clickZone = new THREE.Mesh(clickGeo, clickMat);
       clickZone.position.set(pos[0], pos[1], pos[2]);
-      clickZone.scale.set(0.1, 0.1, 0.1); 
+      clickZone.scale.set(0.15, 0.15, 0.15); 
       clickZone.userData = { partKey: key, isClickZone: true };
       humanGroup.add(clickZone);
       humanPartsMeshes.push(clickZone);
