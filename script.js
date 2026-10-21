@@ -754,14 +754,15 @@ function initHuman3D() {
   if (!container || typeof THREE === 'undefined') return;
   if (humanRenderer) return;
 
-  const w = container.clientWidth;
-  const h = container.clientHeight;
+  // ✅ Экран өлшемін дұрыс алу (консольсіз көрінуі үшін)
+  const w = container.clientWidth || 800;
+  const h = container.clientHeight || 600;
 
   humanScene = new THREE.Scene();
   humanCamera = new THREE.PerspectiveCamera(45, w / h, 0.1, 1000);
   
-  // ✅ Камера биіктігі (модель экранда төменірек тұрады)
-  humanCamera.position.set(0, 0.8, 6);
+  // Камера биіктігі
+  humanCamera.position.set(0, 1.2, 6);
 
   humanRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   humanRenderer.setSize(w, h);
@@ -835,10 +836,10 @@ function initHuman3D() {
 
         humanGroup.add(humanModel);
         
-        // ✅ Модель позициясы (басы кесілмейді)
-        humanGroup.position.y = 0.3; 
+        // ✅ МОДЕЛЬДІҢ ӨЗІН ТӨМЕН ТҮСІРУ (басы кесілмейді)
+        humanGroup.position.y = -0.3; 
         
-        // ✅ Камера фокусы (модель дәл ортада тұрады)
+        // Камера фокусы
         humanCamera.lookAt(0, 0.5, 0);
 
         addHumanPulses();
@@ -923,6 +924,7 @@ function initHuman3D() {
   }
   animate();
 
+  // ✅ Экран өзгергенде өлшемді қайта есептеу
   window.addEventListener('resize', () => {
     if (!humanRenderer) return;
     const nw = container.clientWidth;
@@ -933,8 +935,11 @@ function initHuman3D() {
   });
 }
 
-// ✅ АЙНАЛДЫРУ ФУНКЦИЯСЫ ҚАЙТА ҚОСЫЛДЫ
-function setupHumanEvents(container) {
+// ✅ МЫШКАМЕН АЙНАЛДЫРУ ЖӘНЕ ТІРКЕУ
+function setupHumanEvents() {
+  const container = document.getElementById('human3D');
+  if (!container) return;
+
   container.addEventListener('mousedown', e => {
     humanIsDragging = true;
     humanPrevMouse.x = e.clientX;
@@ -981,6 +986,11 @@ function setupHumanEvents(container) {
     humanPrevMouse.y = e.touches[0].clientY;
   }, { passive: true });
 }
+
+// Бет толық жүктелген соң іске қосу
+window.addEventListener('load', () => {
+  setupHumanEvents();
+});
 
 function selectHumanPart(key) {
   const part = HUMAN_PARTS[key];
@@ -1029,14 +1039,6 @@ function resetHumanInfoPanel() {
     </div>
   `;
 }
-
-// Бет жүктелгенде оқиғаларды тіркеу
-document.addEventListener('DOMContentLoaded', () => {
-  const humanContainer = document.getElementById('human3D');
-  if (humanContainer) {
-    setupHumanEvents(humanContainer);
-  }
-});
 
 /* ============================================================
    САУАЛНАМА
