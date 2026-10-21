@@ -201,7 +201,7 @@ const BRAIN_PARTS = {
     name: 'Мишық', en: 'Cerebellum', icon: '⚖️',
     desc: 'Тепе-теңдік, координация үшін жауапты.',
     func: 'Тепе-теңдік, үйлестіру',
-    cyborg: 'Везибулярлы импланттар осында орнатылады.',
+    cyborg: 'Вестибулярлы импланттар осында орнатылады.',
     color: 0xe8a4a4
   }
 };
@@ -818,7 +818,6 @@ function initHuman3D() {
         const center = box.getCenter(new THREE.Vector3());
         const size = box.getSize(new THREE.Vector3());
 
-        // Модельді дәл ортаға қою
         humanModel.position.set(-center.x, -center.y, -center.z);
 
         const maxDim = Math.max(size.x, size.y, size.z);
@@ -839,8 +838,11 @@ function initHuman3D() {
 
         humanGroup.add(humanModel);
 
-        // Камераны дәл 0,0,0 нүктесіне бағыттау
-        humanCamera.lookAt(0, 0, 0);
+        // Бүкіл топты (модель мен нүктелерді) төмен түсіру
+        humanGroup.position.y = -1.8; 
+
+        // Камераны да сол жерге бағыттау
+        humanCamera.lookAt(0, -1.8, 0); 
 
         createHumanDots();
         addHumanPulses();
