@@ -704,11 +704,7 @@ let humanPrevMouse = { x: 0, y: 0 };
 let humanTargetRot = { x: 0, y: 0 };
 let humanCurrentRot = { x: 0, y: 0 };
 let humanAutoRotate = true;
-let humanPartsMeshes = []; // Бұл енді қолданылмайды (нүктелер жоқ)
-let humanRaycaster, humanMouse;
 let humanModel = null;
-let humanHovered = null;
-let humanActivePart = null;
 
 const HUMAN_PARTS = {
   eye: {
@@ -764,7 +760,8 @@ function initHuman3D() {
   humanScene = new THREE.Scene();
   humanCamera = new THREE.PerspectiveCamera(45, w / h, 0.1, 1000);
   
-  humanCamera.position.set(0, 0.8, 6); // Камера биіктігі
+  // ✅ Камера орны (сізге ұнаған қалыпқа қайтарылды)
+  humanCamera.position.set(0, 1.2, 6);
 
   humanRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   humanRenderer.setSize(w, h);
@@ -800,7 +797,6 @@ function initHuman3D() {
   function loadHumanModel() {
     const loader = new THREE.GLTFLoader();
 
-    // Панельді тазалау
     document.getElementById('humanInfo').innerHTML = `
       <div class="info-placeholder">
         <div class="info-placeholder-icon" style="animation: brainPulse 1.5s infinite;">🧑</div>
@@ -839,11 +835,13 @@ function initHuman3D() {
 
         humanGroup.add(humanModel);
         
-        // Модель позициясы (өзгертілмеді, дұрыс тұр)
+        // Модель позициясы
         humanGroup.position.y = 0.3; 
-        humanCamera.lookAt(0, 0.6, 0);
+        
+        // ✅ Камера фокусы (сізге ұнаған қалыпқа қайтарылды)
+        humanCamera.lookAt(0, 0.9, 0);
 
-        // ✅ НҮКТЕЛЕРДІ ЖАСАУ ФУНКЦИЯСЫ МҮЛДЕМ АЛЫНЫП ТАСТАЛДЫ
+        // ✅ НҮКТЕЛЕРДІ ЖАСАУ ФУНКЦИЯСЫ ШАҚЫРЫЛМАЙДЫ
         // createHumanDots(); 
         
         addHumanPulses();
@@ -938,11 +936,10 @@ function initHuman3D() {
   });
 }
 
-// Бұл функциялар енді тек "Артқа" басқанда қолданылады
+// ✅ БАТЫРМАЛАР АРҚЫЛЫ ТАҢДАУ ЖҮЙЕСІ
 function selectHumanPart(key) {
   const part = HUMAN_PARTS[key];
   if (!part) return;
-  humanActivePart = key;
   
   document.getElementById('humanInfo').innerHTML = `
     <div class="info-content">
@@ -970,8 +967,6 @@ function selectHumanPart(key) {
 }
 
 function resetHumanInfoPanel() {
-  humanActivePart = null;
-  humanHovered = null;
   document.getElementById('humanInfo').innerHTML = `
     <div class="info-placeholder">
       <div class="info-placeholder-icon">🧑</div>
@@ -990,7 +985,6 @@ function resetHumanInfoPanel() {
   `;
 }
 
-// 3D модельге тінтуірмен айналдыру (нүктелер жоқ болса да істейді)
 function setupHumanEvents(container) {
   container.addEventListener('mousedown', e => {
     humanIsDragging = true;
@@ -1037,10 +1031,15 @@ function setupHumanEvents(container) {
     humanPrevMouse.x = e.touches[0].clientX;
     humanPrevMouse.y = e.touches[0].clientY;
   }, { passive: true });
-
-  // setupHumanEvents-ті шақыру
-  setupHumanEvents(container); 
 }
+
+// setupHumanEvents-ті шақыру
+document.addEventListener('DOMContentLoaded', () => {
+  const humanContainer = document.getElementById('human3D');
+  if (humanContainer) {
+    setupHumanEvents(humanContainer);
+  }
+});
 
 /* ============================================================
    САУАЛНАМА
