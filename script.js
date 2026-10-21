@@ -764,7 +764,7 @@ function initHuman3D() {
   humanScene = new THREE.Scene();
   humanCamera = new THREE.PerspectiveCamera(45, w / h, 0.1, 1000);
   
-  // ✅ КАМЕРАНЫ ЖОҒАРЫРАҚ КӨТЕРУ (модель экранда төменірек көрінеді)
+  // Камера орны (өзгертілмеді)
   humanCamera.position.set(0, 1.6, 6);
 
   humanRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -840,10 +840,10 @@ function initHuman3D() {
 
         humanGroup.add(humanModel);
         
-        // Модельдің өзі ортасында тұрады
+        // Модель позициясы (өзгертілмеді)
         humanGroup.position.y = 0.5; 
 
-        // ✅ КАМЕРАНЫҢ ФОКУСЫН ТӨМЕНДЕТУ
+        // Камера фокусы (өзгертілмеді)
         humanCamera.lookAt(0, 0.3, 0);
 
         createHumanDots();
@@ -876,7 +876,7 @@ function initHuman3D() {
     );
   }
 
-    function createHumanDots() {
+  function createHumanDots() {
     humanPartsMeshes = [];
 
     const bbox = new THREE.Box3().setFromObject(humanModel);
@@ -909,7 +909,7 @@ function initHuman3D() {
         cz + sz * p.z
       ];
 
-      // ✅ НҮКТЕЛЕРДІ КІШІРЕЙТУ (0.08 орнына 0.04 қойдық)
+      // ✅ НҮКТЕЛЕРДІ КІШІРЕЙТУ
       const dotGeo = new THREE.SphereGeometry(1, 32, 32);
       const dotMat = new THREE.MeshPhongMaterial({
         color: part.color,
