@@ -760,8 +760,8 @@ function initHuman3D() {
   humanScene = new THREE.Scene();
   humanCamera = new THREE.PerspectiveCamera(45, w / h, 0.1, 1000);
   
-  // ✅ Камера орны (сізге ұнаған қалыпқа қайтарылды)
-  humanCamera.position.set(0, 1.2, 6);
+  // ✅ Камера биіктігі (модель экранда төменірек тұрады)
+  humanCamera.position.set(0, 0.8, 6);
 
   humanRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   humanRenderer.setSize(w, h);
@@ -835,15 +835,12 @@ function initHuman3D() {
 
         humanGroup.add(humanModel);
         
-        // Модель позициясы
+        // ✅ Модель позициясы (басы кесілмейді)
         humanGroup.position.y = 0.3; 
         
-        // ✅ Камера фокусы (сізге ұнаған қалыпқа қайтарылды)
-        humanCamera.lookAt(0, 0.9, 0);
+        // ✅ Камера фокусы (модель дәл ортада тұрады)
+        humanCamera.lookAt(0, 0.5, 0);
 
-        // ✅ НҮКТЕЛЕРДІ ЖАСАУ ФУНКЦИЯСЫ ШАҚЫРЫЛМАЙДЫ
-        // createHumanDots(); 
-        
         addHumanPulses();
         resetHumanInfoPanel();
         console.log('✅ Адам моделі жүктелді!');
@@ -936,55 +933,7 @@ function initHuman3D() {
   });
 }
 
-// ✅ БАТЫРМАЛАР АРҚЫЛЫ ТАҢДАУ ЖҮЙЕСІ
-function selectHumanPart(key) {
-  const part = HUMAN_PARTS[key];
-  if (!part) return;
-  
-  document.getElementById('humanInfo').innerHTML = `
-    <div class="info-content">
-      <button onclick="resetHumanInfoPanel()" style="margin-bottom: 20px; padding: 8px 16px; background: #f1f5f9; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; color: #475569; display: flex; align-items: center; gap: 8px;">
-        ← Артқа (Басқа мүше таңдау)
-      </button>
-      <div class="info-icon">${part.icon}</div>
-      <h3>${part.name}</h3>
-      <div class="info-en">${part.en}</div>
-      <p>${part.desc}</p>
-      <div class="info-block">
-        <div class="info-block-label">🔌 ИМПЛАНТ</div>
-        <div class="info-block-text">${part.implant}</div>
-      </div>
-      <div class="info-block">
-        <div class="info-block-label">💰 БАҒАСЫ</div>
-        <div class="info-block-text">${part.price}</div>
-      </div>
-      <div class="info-block">
-        <div class="info-block-label">📊 ЖЕТІСТІК ДЕҢГЕЙІ</div>
-        <div class="info-block-text">${part.success}</div>
-      </div>
-    </div>
-  `;
-}
-
-function resetHumanInfoPanel() {
-  document.getElementById('humanInfo').innerHTML = `
-    <div class="info-placeholder">
-      <div class="info-placeholder-icon">🧑</div>
-      <h3>Мүшені таңдаңыз</h3>
-      <p>Төмендегі батырмаларды басып, импланттар туралы біліңіз</p>
-      <div class="brain-parts-list" style="margin-top: 30px; display: flex; flex-direction: column; gap: 10px;">
-        ${Object.keys(HUMAN_PARTS).map(key => {
-          const p = HUMAN_PARTS[key];
-          const hex = '#' + p.color.toString(16).padStart(6, '0');
-          return `<button class="part-chip" onclick="selectHumanPart('${key}')" style="border: 2px solid ${hex}; color: ${hex}; font-size: 1rem; padding: 12px 20px; width: 100%; justify-content: center; background: #fff;">
-            ${p.icon} ${p.name} <span style="font-size: 0.8rem; color: #94a3b8; margin-left: 10px;">(${p.en})</span>
-          </button>`;
-        }).join('')}
-      </div>
-    </div>
-  `;
-}
-
+// ✅ АЙНАЛДЫРУ ФУНКЦИЯСЫ ҚАЙТА ҚОСЫЛДЫ
 function setupHumanEvents(container) {
   container.addEventListener('mousedown', e => {
     humanIsDragging = true;
@@ -1033,7 +982,55 @@ function setupHumanEvents(container) {
   }, { passive: true });
 }
 
-// setupHumanEvents-ті шақыру
+function selectHumanPart(key) {
+  const part = HUMAN_PARTS[key];
+  if (!part) return;
+  
+  document.getElementById('humanInfo').innerHTML = `
+    <div class="info-content">
+      <button onclick="resetHumanInfoPanel()" style="margin-bottom: 20px; padding: 8px 16px; background: #f1f5f9; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; color: #475569; display: flex; align-items: center; gap: 8px;">
+        ← Артқа (Басқа мүше таңдау)
+      </button>
+      <div class="info-icon">${part.icon}</div>
+      <h3>${part.name}</h3>
+      <div class="info-en">${part.en}</div>
+      <p>${part.desc}</p>
+      <div class="info-block">
+        <div class="info-block-label">🔌 ИМПЛАНТ</div>
+        <div class="info-block-text">${part.implant}</div>
+      </div>
+      <div class="info-block">
+        <div class="info-block-label">💰 БАҒАСЫ</div>
+        <div class="info-block-text">${part.price}</div>
+      </div>
+      <div class="info-block">
+        <div class="info-block-label">📊 ЖЕТІСТІК ДЕҢГЕЙІ</div>
+        <div class="info-block-text">${part.success}</div>
+      </div>
+    </div>
+  `;
+}
+
+function resetHumanInfoPanel() {
+  document.getElementById('humanInfo').innerHTML = `
+    <div class="info-placeholder">
+      <div class="info-placeholder-icon">🧑</div>
+      <h3>Мүшені таңдаңыз</h3>
+      <p>Төмендегі батырмаларды басып, импланттар туралы біліңіз</p>
+      <div class="brain-parts-list" style="margin-top: 30px; display: flex; flex-direction: column; gap: 10px;">
+        ${Object.keys(HUMAN_PARTS).map(key => {
+          const p = HUMAN_PARTS[key];
+          const hex = '#' + p.color.toString(16).padStart(6, '0');
+          return `<button class="part-chip" onclick="selectHumanPart('${key}')" style="border: 2px solid ${hex}; color: ${hex}; font-size: 1rem; padding: 12px 20px; width: 100%; justify-content: center; background: #fff;">
+            ${p.icon} ${p.name} <span style="font-size: 0.8rem; color: #94a3b8; margin-left: 10px;">(${p.en})</span>
+          </button>`;
+        }).join('')}
+      </div>
+    </div>
+  `;
+}
+
+// Бет жүктелгенде оқиғаларды тіркеу
 document.addEventListener('DOMContentLoaded', () => {
   const humanContainer = document.getElementById('human3D');
   if (humanContainer) {
