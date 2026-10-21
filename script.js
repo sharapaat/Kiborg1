@@ -839,8 +839,8 @@ function initHuman3D() {
 
         humanGroup.add(humanModel);
         
-        // Бүкіл топты (модель мен нүктелерді) төмен түсіру
-        humanGroup.position.y = -2.5; 
+        // Бүкіл топты (модель мен нүктелерді) сәл төмен түсіру
+        humanGroup.position.y = -0.5; 
 
         humanCamera.lookAt(0, 0, 0);
 
