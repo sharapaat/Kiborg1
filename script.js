@@ -840,8 +840,8 @@ function initHuman3D() {
 
         humanGroup.add(humanModel);
         
-        // Бүкіл топты сәл жоғары көтеру
-        humanGroup.position.y = 0.5; 
+        // Бүкіл топты биіктігі (азайтсаң төмен түседі, көбейтсең жоғары көтеріледі)
+        humanGroup.position.y = 0.2; 
 
         // Камераны сол биіктікке бағыттау
         humanCamera.lookAt(0, 1.2, 0);
