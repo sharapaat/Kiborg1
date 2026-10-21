@@ -201,7 +201,7 @@ const BRAIN_PARTS = {
     name: 'Мишық', en: 'Cerebellum', icon: '⚖️',
     desc: 'Тепе-теңдік, координация үшін жауапты.',
     func: 'Тепе-теңдік, үйлестіру',
-    cyborg: 'Вестбулярлы импланттар осында орнатылады.',
+    cyborg: 'Вестибулярлы импланттар осында орнатылады.',
     color: 0xe8a4a4
   }
 };
@@ -704,7 +704,7 @@ let humanPrevMouse = { x: 0, y: 0 };
 let humanTargetRot = { x: 0, y: 0 };
 let humanCurrentRot = { x: 0, y: 0 };
 let humanAutoRotate = true;
-let humanPartsMeshes = [];
+let humanPartsMeshes = []; // Бұл енді қолданылмайды (нүктелер жоқ)
 let humanRaycaster, humanMouse;
 let humanModel = null;
 let humanHovered = null;
@@ -764,8 +764,7 @@ function initHuman3D() {
   humanScene = new THREE.Scene();
   humanCamera = new THREE.PerspectiveCamera(45, w / h, 0.1, 1000);
   
-  // ✅ Камера биіктігі
-  humanCamera.position.set(0, 1.2, 6);
+  humanCamera.position.set(0, 0.8, 6); // Камера биіктігі
 
   humanRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   humanRenderer.setSize(w, h);
@@ -801,13 +800,13 @@ function initHuman3D() {
   function loadHumanModel() {
     const loader = new THREE.GLTFLoader();
 
+    // Панельді тазалау
     document.getElementById('humanInfo').innerHTML = `
       <div class="info-placeholder">
         <div class="info-placeholder-icon" style="animation: brainPulse 1.5s infinite;">🧑</div>
         <h3>Адам моделі жүктелуде...</h3>
         <p>male_full_body_anatomy.glb файлы оқылуда</p>
         <p style="color: #2563eb; font-weight: bold; margin-top: 10px;" id="humanProgress">0%</p>
-        <p style="font-size: 0.75rem; color: #64748b;">65 MB — 2-3 минут күтуі мүмкін</p>
       </div>
     `;
 
@@ -840,13 +839,13 @@ function initHuman3D() {
 
         humanGroup.add(humanModel);
         
-        // ✅ МОДЕЛЬДІҢ ӨЗІН ТӨМЕН ТҮСІРУ (-0.5)
-        humanGroup.position.y = -0.5; 
+        // Модель позициясы (өзгертілмеді, дұрыс тұр)
+        humanGroup.position.y = 0.3; 
+        humanCamera.lookAt(0, 0.6, 0);
 
-        // ✅ КАМЕРА ФОКУСЫН СӘЙКЕСІНШЕ ТӨМЕНДЕТУ (0.5)
-        humanCamera.lookAt(0, 0.5, 0);
-
-        createHumanDots();
+        // ✅ НҮКТЕЛЕРДІ ЖАСАУ ФУНКЦИЯСЫ МҮЛДЕМ АЛЫНЫП ТАСТАЛДЫ
+        // createHumanDots(); 
+        
         addHumanPulses();
         resetHumanInfoPanel();
         console.log('✅ Адам моделі жүктелді!');
@@ -854,19 +853,8 @@ function initHuman3D() {
       (xhr) => {
         if (xhr.total) {
           const percent = Math.floor((xhr.loaded / xhr.total) * 100);
-          const loadedMB = (xhr.loaded / 1024 / 1024).toFixed(1);
-          const totalMB = (xhr.total / 1024 / 1024).toFixed(1);
           const progressEl = document.getElementById('humanProgress');
-          if (progressEl) {
-            progressEl.textContent = percent + '% (' + loadedMB + ' / ' + totalMB + ' MB)';
-          }
-          console.log('Адам: ' + percent + '% — ' + loadedMB + ' MB / ' + totalMB + ' MB');
-        } else {
-          const loadedMB = (xhr.loaded / 1024 / 1024).toFixed(1);
-          const progressEl = document.getElementById('humanProgress');
-          if (progressEl) {
-            progressEl.textContent = loadedMB + ' MB жүктелді...';
-          }
+          if (progressEl) progressEl.textContent = percent + '%';
         }
       },
       (error) => {
@@ -874,99 +862,6 @@ function initHuman3D() {
         showHumanError();
       }
     );
-  }
-
-  function createHumanDots() {
-    humanPartsMeshes = [];
-
-    const bbox = new THREE.Box3().setFromObject(humanModel);
-    const min = bbox.min;
-    const max = bbox.max;
-    
-    const cx = (min.x + max.x) / 2;
-    const cy = (min.y + max.y) / 2;
-    const cz = (min.z + max.z) / 2;
-    const sx = (max.x - min.x);
-    const sy = (max.y - min.y);
-    const sz = (max.z - min.z);
-
-    const parts = {
-      eye:   { x: 0,     y: 0.27,  z: 0.3 },
-      ear:   { x: 0.3,   y: 0.25,  z: 0.0 },
-      hand:  { x: -0.42, y: -0.20, z: 0.05 },
-      heart: { x: 0.08,  y: 0.00,  z: 0.15 },
-      leg:   { x: 0.12,  y: -0.60, z: 0.0 }
-    };
-
-    Object.keys(parts).forEach(key => {
-      const part = HUMAN_PARTS[key];
-      const p = parts[key];
-
-      const pos = [
-        cx + sx * p.x,
-        cy + sy * p.y,
-        cz + sz * p.z
-      ];
-
-      const dotGeo = new THREE.SphereGeometry(1, 32, 32);
-      const dotMat = new THREE.MeshPhongMaterial({
-        color: part.color,
-        emissive: part.color,
-        emissiveIntensity: 1.5,
-        shininess: 120,
-        transparent: true,
-        opacity: 1.0,
-        depthTest: false,
-        depthWrite: false
-      });
-      const dot = new THREE.Mesh(dotGeo, dotMat);
-      dot.position.set(pos[0], pos[1], pos[2]);
-      dot.scale.set(0.08, 0.08, 0.08);
-      dot.renderOrder = 999;
-      dot.userData = { 
-        partKey: key, 
-        isDot: true,
-        baseScale: [0.08, 0.08, 0.08]
-      };
-      humanGroup.add(dot);
-      humanPartsMeshes.push(dot);
-
-      const glowGeo = new THREE.SphereGeometry(1, 20, 20);
-      const glowMat = new THREE.MeshBasicMaterial({
-        color: part.color,
-        transparent: true,
-        opacity: 0.5,
-        depthTest: false,
-        depthWrite: false,
-        side: THREE.BackSide
-      });
-      const glow = new THREE.Mesh(glowGeo, glowMat);
-      glow.position.set(pos[0], pos[1], pos[2]);
-      glow.scale.set(0.15, 0.15, 0.15);
-      glow.renderOrder = 998;
-      glow.userData = { 
-        partKey: key, 
-        isGlow: true,
-        baseScale: [0.15, 0.15, 0.15]
-      };
-      humanGroup.add(glow);
-      humanPartsMeshes.push(glow);
-
-      const clickGeo = new THREE.SphereGeometry(1, 16, 16);
-      const clickMat = new THREE.MeshBasicMaterial({
-        color: part.color,
-        transparent: true,
-        opacity: 0.0,
-        depthTest: false,
-        depthWrite: false
-      });
-      const clickZone = new THREE.Mesh(clickGeo, clickMat);
-      clickZone.position.set(pos[0], pos[1], pos[2]);
-      clickZone.scale.set(0.2, 0.2, 0.2);
-      clickZone.userData = { partKey: key, isClickZone: true };
-      humanGroup.add(clickZone);
-      humanPartsMeshes.push(clickZone);
-    });
   }
 
   function showHumanError() {
@@ -1000,11 +895,6 @@ function initHuman3D() {
     humanGroup.userData.pulseGroup = pulseGroup;
   }
 
-  humanRaycaster = new THREE.Raycaster();
-  humanMouse = new THREE.Vector2();
-
-  setupHumanEvents(container);
-
   const clock = new THREE.Clock();
 
   function animate() {
@@ -1034,14 +924,6 @@ function initHuman3D() {
       });
     }
 
-    humanPartsMeshes.forEach((m, i) => {
-      if (m.userData.isGlow) {
-        const baseS = m.userData.baseScale;
-        const pulse = 1 + Math.sin(t * 2 + i) * 0.18;
-        m.scale.set(baseS[0] * pulse, baseS[1] * pulse, baseS[2] * pulse);
-      }
-    });
-
     humanRenderer.render(humanScene, humanCamera);
   }
   animate();
@@ -1056,42 +938,59 @@ function initHuman3D() {
   });
 }
 
-function highlightHumanPart(partKey, on) {
-  humanPartsMeshes.forEach(m => {
-    const key = m.userData.partKey;
-    const isHover = (key === partKey && on);
-    const isSelected = (humanActivePart === key);
-    
-    if (m.userData.isDot) {
-      const baseS = m.userData.baseScale;
-      if (isHover) {
-        m.scale.set(baseS[0] * 1.7, baseS[1] * 1.7, baseS[2] * 1.7);
-        m.material.emissiveIntensity = 2.5;
-      } else if (isSelected) {
-        m.scale.set(baseS[0] * 1.5, baseS[1] * 1.5, baseS[2] * 1.5);
-        m.material.emissiveIntensity = 2.0;
-      } else {
-        m.scale.set(baseS[0], baseS[1], baseS[2]);
-        m.material.emissiveIntensity = 1.5;
-      }
-    }
-    
-    if (m.userData.isGlow) {
-      const baseS = m.userData.baseScale;
-      if (isHover) {
-        m.scale.set(baseS[0] * 1.8, baseS[1] * 1.8, baseS[2] * 1.8);
-        m.material.opacity = 0.85;
-      } else if (isSelected) {
-        m.scale.set(baseS[0] * 1.6, baseS[1] * 1.6, baseS[2] * 1.6);
-        m.material.opacity = 0.65;
-      } else {
-        m.scale.set(baseS[0], baseS[1], baseS[2]);
-        m.material.opacity = 0.5;
-      }
-    }
-  });
+// Бұл функциялар енді тек "Артқа" басқанда қолданылады
+function selectHumanPart(key) {
+  const part = HUMAN_PARTS[key];
+  if (!part) return;
+  humanActivePart = key;
+  
+  document.getElementById('humanInfo').innerHTML = `
+    <div class="info-content">
+      <button onclick="resetHumanInfoPanel()" style="margin-bottom: 20px; padding: 8px 16px; background: #f1f5f9; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; color: #475569; display: flex; align-items: center; gap: 8px;">
+        ← Артқа (Басқа мүше таңдау)
+      </button>
+      <div class="info-icon">${part.icon}</div>
+      <h3>${part.name}</h3>
+      <div class="info-en">${part.en}</div>
+      <p>${part.desc}</p>
+      <div class="info-block">
+        <div class="info-block-label">🔌 ИМПЛАНТ</div>
+        <div class="info-block-text">${part.implant}</div>
+      </div>
+      <div class="info-block">
+        <div class="info-block-label">💰 БАҒАСЫ</div>
+        <div class="info-block-text">${part.price}</div>
+      </div>
+      <div class="info-block">
+        <div class="info-block-label">📊 ЖЕТІСТІК ДЕҢГЕЙІ</div>
+        <div class="info-block-text">${part.success}</div>
+      </div>
+    </div>
+  `;
 }
 
+function resetHumanInfoPanel() {
+  humanActivePart = null;
+  humanHovered = null;
+  document.getElementById('humanInfo').innerHTML = `
+    <div class="info-placeholder">
+      <div class="info-placeholder-icon">🧑</div>
+      <h3>Мүшені таңдаңыз</h3>
+      <p>Төмендегі батырмаларды басып, импланттар туралы біліңіз</p>
+      <div class="brain-parts-list" style="margin-top: 30px; display: flex; flex-direction: column; gap: 10px;">
+        ${Object.keys(HUMAN_PARTS).map(key => {
+          const p = HUMAN_PARTS[key];
+          const hex = '#' + p.color.toString(16).padStart(6, '0');
+          return `<button class="part-chip" onclick="selectHumanPart('${key}')" style="border: 2px solid ${hex}; color: ${hex}; font-size: 1rem; padding: 12px 20px; width: 100%; justify-content: center; background: #fff;">
+            ${p.icon} ${p.name} <span style="font-size: 0.8rem; color: #94a3b8; margin-left: 10px;">(${p.en})</span>
+          </button>`;
+        }).join('')}
+      </div>
+    </div>
+  `;
+}
+
+// 3D модельге тінтуірмен айналдыру (нүктелер жоқ болса да істейді)
 function setupHumanEvents(container) {
   container.addEventListener('mousedown', e => {
     humanIsDragging = true;
@@ -1102,10 +1001,6 @@ function setupHumanEvents(container) {
   window.addEventListener('mouseup', () => humanIsDragging = false);
 
   window.addEventListener('mousemove', e => {
-    const rect = container.getBoundingClientRect();
-    humanMouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-    humanMouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
-
     if (humanIsDragging) {
       const dx = e.clientX - humanPrevMouse.x;
       const dy = e.clientY - humanPrevMouse.y;
@@ -1115,54 +1010,6 @@ function setupHumanEvents(container) {
       humanPrevMouse.x = e.clientX;
       humanPrevMouse.y = e.clientY;
       humanAutoRotate = false;
-      return;
-    }
-
-    humanRaycaster.setFromCamera(humanMouse, humanCamera);
-    const clickable = humanPartsMeshes.filter(m => m.userData.isClickZone);
-    const hits = humanRaycaster.intersectObjects(clickable, false);
-
-    if (hits.length > 0) {
-      const hitKey = hits[0].object.userData.partKey;
-      if (humanHovered !== hitKey) {
-        humanHovered = hitKey;
-        document.body.style.cursor = 'pointer';
-        highlightHumanPart(hitKey, true);
-      }
-    } else if (humanHovered) {
-      humanHovered = null;
-      document.body.style.cursor = '';
-      if (humanActivePart) {
-        highlightHumanPart(humanActivePart, true);
-      } else {
-        humanPartsMeshes.forEach(m => {
-          if (m.userData.isDot) {
-            m.scale.set(m.userData.baseScale[0], m.userData.baseScale[1], m.userData.baseScale[2]);
-            m.material.emissiveIntensity = 1.5;
-          }
-          if (m.userData.isGlow) {
-            m.scale.set(m.userData.baseScale[0], m.userData.baseScale[1], m.userData.baseScale[2]);
-            m.material.opacity = 0.5;
-          }
-        });
-      }
-    }
-  });
-
-  container.addEventListener('click', e => {
-    if (Math.abs(e.movementX) > 3 || Math.abs(e.movementY) > 3) return;
-    const rect = container.getBoundingClientRect();
-    humanMouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-    humanMouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
-    humanRaycaster.setFromCamera(humanMouse, humanCamera);
-    
-    const clickable = humanPartsMeshes.filter(m => m.userData.isClickZone);
-    const hits = humanRaycaster.intersectObjects(clickable, false);
-    
-    if (hits.length > 0) {
-      const partKey = hits[0].object.userData.partKey;
-      humanActivePart = partKey;
-      selectHumanPart(partKey);
     }
   });
 
@@ -1190,60 +1037,9 @@ function setupHumanEvents(container) {
     humanPrevMouse.x = e.touches[0].clientX;
     humanPrevMouse.y = e.touches[0].clientY;
   }, { passive: true });
-}
 
-function selectHumanPart(key) {
-  const part = HUMAN_PARTS[key];
-  if (!part) return;
-  humanActivePart = key;
-  
-  document.getElementById('humanInfo').innerHTML = `
-    <div class="info-content">
-      <div class="info-icon">${part.icon}</div>
-      <h3>${part.name}</h3>
-      <div class="info-en">${part.en}</div>
-      <p>${part.desc}</p>
-      <div class="info-block">
-        <div class="info-block-label">🔌 ИМПЛАНТ</div>
-        <div class="info-block-text">${part.implant}</div>
-      </div>
-      <div class="info-block">
-        <div class="info-block-label">💰 БАҒАСЫ</div>
-        <div class="info-block-text">${part.price}</div>
-      </div>
-      <div class="info-block">
-        <div class="info-block-label">📊 ЖЕТІСТІК ДЕҢГЕЙІ</div>
-        <div class="info-block-text">${part.success}</div>
-      </div>
-    </div>
-  `;
-  
-  highlightHumanPart(key, true);
-}
-
-function resetHumanInfoPanel() {
-  humanActivePart = null;
-  humanHovered = null;
-  document.getElementById('humanInfo').innerHTML = `
-    <div class="info-placeholder">
-      <div class="info-placeholder-icon">🧑</div>
-      <h3>Мүшені таңдаңыз</h3>
-      <p>Адам денесіндегі түрлі-түсті нүктелерді басып, импланттар туралы біліңіз</p>
-      <div class="brain-parts-list">
-        ${Object.keys(HUMAN_PARTS).map(key => {
-          const p = HUMAN_PARTS[key];
-          const hex = '#' + p.color.toString(16).padStart(6, '0');
-          return `<button class="part-chip" onclick="selectHumanPart('${key}')" style="border-color: ${hex}; color: ${hex};">${p.icon} ${p.name}</button>`;
-        }).join('')}
-      </div>
-      <div style="margin-top: 25px; padding: 16px; background: #f0f7ff; border-radius: 10px; font-size: 0.85rem; text-align: left;">
-        <strong>💡 Қалай қолдану:</strong><br>
-        1. Адамды айналдырыңыз (тышқан)<br>
-        2. Жақындатыңыз (дөңгелек)<br>
-        3. <strong>Түсті нүктені басыңыз</strong>
-      </div>
-    </div>
-  `;
+  // setupHumanEvents-ті шақыру
+  setupHumanEvents(container); 
 }
 
 /* ============================================================
