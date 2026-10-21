@@ -763,7 +763,9 @@ function initHuman3D() {
 
   humanScene = new THREE.Scene();
   humanCamera = new THREE.PerspectiveCamera(45, w / h, 0.1, 1000);
-  humanCamera.position.set(0, 0, 6);
+  
+  // КАМЕРАНЫ ТӨМЕН ТҮСІРУ (модель экранда жоғары көрінеді)
+  humanCamera.position.set(0, -1.5, 6);
 
   humanRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   humanRenderer.setSize(w, h);
@@ -818,7 +820,6 @@ function initHuman3D() {
         const center = box.getCenter(new THREE.Vector3());
         const size = box.getSize(new THREE.Vector3());
 
-        // Модельді өз ортасына қою
         humanModel.position.sub(center);
 
         const maxDim = Math.max(size.x, size.y, size.z);
@@ -839,8 +840,8 @@ function initHuman3D() {
 
         humanGroup.add(humanModel);
 
-        // Камераны дәл модельдің ортасына бағыттау (модель қайда болса да, экран ортасында көрінеді)
-        humanCamera.lookAt(0, 0, 0);
+        // Камераны жаңа биіктікке бағыттау
+        humanCamera.lookAt(0, -1.5, 0);
 
         createHumanDots();
         addHumanPulses();
