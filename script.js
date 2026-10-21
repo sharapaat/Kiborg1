@@ -659,7 +659,7 @@ function resetBrainInfoPanel() {
         ${Object.keys(BRAIN_PARTS).map(key => {
           const p = BRAIN_PARTS[key];
           const hex = '#' + p.color.toString(16).padStart(6, '0');
-          return `<button class="part-chip" onclick="selectBrainPart('${key}')" style="border-color: ${hex}; color: ${hex};">${p.icon} ${p.name}</button>`;
+          return `<button class="part-chip" onclick="selectBrainPart('${key}')" style="border-color: ${hex}; color: hex;">{p.icon} ${p.name}</button>`;
         }).join('')}
       </div>
       <div style="margin-top: 25px; padding: 16px; background: #f0f7ff; border-radius: 10px; font-size: 0.85rem; text-align: left;">
@@ -765,7 +765,7 @@ function initHuman3D() {
   humanCamera = new THREE.PerspectiveCamera(45, w / h, 0.1, 1000);
   
   // Камераны дәл кеуде тұсына бағыттау
-  humanCamera.position.set(0, 1.2, 6);
+  humanCamera.position.set(0, 1.4, 6);
 
   humanRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   humanRenderer.setSize(w, h);
@@ -840,11 +840,11 @@ function initHuman3D() {
 
         humanGroup.add(humanModel);
         
-        // Бүкіл топты биіктігі (азайтсаң төмен түседі, көбейтсең жоғары көтеріледі)
-        humanGroup.position.y = 0.2; 
+        // Бүкіл топты сәл жоғары көтеру
+        humanGroup.position.y = 0.5; 
 
         // Камераны сол биіктікке бағыттау
-        humanCamera.lookAt(0, 1.2, 0);
+        humanCamera.lookAt(0, 1.4, 0);
 
         createHumanDots();
         addHumanPulses();
@@ -1233,7 +1233,7 @@ function resetHumanInfoPanel() {
         ${Object.keys(HUMAN_PARTS).map(key => {
           const p = HUMAN_PARTS[key];
           const hex = '#' + p.color.toString(16).padStart(6, '0');
-          return `<button class="part-chip" onclick="selectHumanPart('${key}')" style="border-color: ${hex}; color: ${hex};">${p.icon} ${p.name}</button>`;
+          return `<button class="part-chip" onclick="selectHumanPart('${key}')" style="border-color: ${hex}; color: hex;">{p.icon} ${p.name}</button>`;
         }).join('')}
       </div>
       <div style="margin-top: 25px; padding: 16px; background: #f0f7ff; border-radius: 10px; font-size: 0.85rem; text-align: left;">
@@ -1276,3 +1276,4 @@ window.addEventListener('load', () => {
   showBootLogs();
   runProgress();
 });
+
