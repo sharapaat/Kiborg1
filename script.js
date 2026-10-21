@@ -764,8 +764,8 @@ function initHuman3D() {
   humanScene = new THREE.Scene();
   humanCamera = new THREE.PerspectiveCamera(45, w / h, 0.1, 1000);
   
-  // ✅ КАМЕРАНЫ ЖОҒАРЫРАҚ КӨТЕРУ (модель экранда төменірек көрінеді)
-  humanCamera.position.set(0, 1.6, 6);
+  // Камераны дәл кеуде тұсына бағыттау
+  humanCamera.position.set(0, 1.2, 6);
 
   humanRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   humanRenderer.setSize(w, h);
@@ -840,11 +840,11 @@ function initHuman3D() {
 
         humanGroup.add(humanModel);
         
-        // Модельдің өзі ортасында тұрады
+        // Бүкіл топты сәл жоғары көтеру
         humanGroup.position.y = 0.5; 
 
-        // ✅ КАМЕРАНЫҢ ФОКУСЫН ТӨМЕНДЕТУ
-        humanCamera.lookAt(0, 0.3, 0);
+        // Камераны сол биіктікке бағыттау
+        humanCamera.lookAt(0, 1.2, 0);
 
         createHumanDots();
         addHumanPulses();
@@ -890,13 +890,12 @@ function initHuman3D() {
     const sy = (max.y - min.y);
     const sz = (max.z - min.z);
 
-    // Нүктелердің координаталары модельдің ішіне дәл келуі үшін реттелді
     const parts = {
-      eye:   { x: 0,     y: 0.38,  z: 0.25 },
-      ear:   { x: 0.28,  y: 0.35,  z: 0.0 },
-      hand:  { x: -0.35, y: -0.05, z: 0.1 },
-      heart: { x: 0.08,  y: 0.15,  z: 0.15 },
-      leg:   { x: 0.15,  y: -0.35, z: 0.0 }
+      eye:   { x: 0,     y: 0.27,  z: 0.3 },
+      ear:   { x: 0.3,   y: 0.25,  z: 0.0 },
+      hand:  { x: -0.42, y: -0.20, z: 0.05 },
+      heart: { x: 0.08,  y: 0.00,  z: 0.15 },
+      leg:   { x: 0.12,  y: -0.60, z: 0.0 }
     };
 
     Object.keys(parts).forEach(key => {
