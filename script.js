@@ -764,7 +764,7 @@ function initHuman3D() {
   humanScene = new THREE.Scene();
   humanCamera = new THREE.PerspectiveCamera(45, w / h, 0.1, 1000);
   
-  // Камера биіктігі (модель экранда төменірек тұрады)
+  // ✅ Камера биіктігі 1.2 (сіздің ұсынысыңыз)
   humanCamera.position.set(0, 1.2, 6);
 
   humanRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -840,10 +840,11 @@ function initHuman3D() {
 
         humanGroup.add(humanModel);
         
-        // Модель позициясын төмендету
+        // Модель позициясын төмендету (сәл төменірек тұруы үшін)
         humanGroup.position.y = 0.3; 
-        // Камера фокусын төмендету
-        humanCamera.lookAt(0, 0.9, 0);
+
+        // ✅ Фокус биіктігі 0.8 (модель төменірек көрінеді)
+        humanCamera.lookAt(0, 0.8, 0);
 
         createHumanDots();
         addHumanPulses();
