@@ -764,7 +764,6 @@ function initHuman3D() {
   humanScene = new THREE.Scene();
   humanCamera = new THREE.PerspectiveCamera(45, w / h, 0.1, 1000);
   
-  // Камера дәл ортаға қарайды
   humanCamera.position.set(0, 0, 6);
 
   humanRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -820,11 +819,16 @@ function initHuman3D() {
         const center = box.getCenter(new THREE.Vector3());
         const size = box.getSize(new THREE.Vector3());
 
+        // 1. Модельді өз ортасына қою
         humanModel.position.sub(center);
-
+        
+        // 2. Өлшемін үлкейту
         const maxDim = Math.max(size.x, size.y, size.z);
         const scale = 3.0 / maxDim;
         humanModel.scale.setScalar(scale);
+        
+        // 3. Модельді ҚАТТЫ ТӨМЕН түсіру
+        humanModel.position.y -= 4.0;
 
         humanModel.traverse((child) => {
           if (child.isMesh) {
