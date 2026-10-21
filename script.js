@@ -819,16 +819,11 @@ function initHuman3D() {
         const center = box.getCenter(new THREE.Vector3());
         const size = box.getSize(new THREE.Vector3());
 
-        // 1. Модельді өз ортасына қою
         humanModel.position.sub(center);
-        
-        // 2. Өлшемін үлкейту
+
         const maxDim = Math.max(size.x, size.y, size.z);
         const scale = 3.0 / maxDim;
         humanModel.scale.setScalar(scale);
-        
-        // 3. Модельді ҚАТТЫ ТӨМЕН түсіру
-        humanModel.position.y -= 4.0;
 
         humanModel.traverse((child) => {
           if (child.isMesh) {
@@ -843,6 +838,9 @@ function initHuman3D() {
         });
 
         humanGroup.add(humanModel);
+        
+        // Бүкіл топты (модель мен нүктелерді) төмен түсіру
+        humanGroup.position.y = -2.5; 
 
         humanCamera.lookAt(0, 0, 0);
 
