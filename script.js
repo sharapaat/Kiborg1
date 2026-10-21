@@ -818,7 +818,8 @@ function initHuman3D() {
         const center = box.getCenter(new THREE.Vector3());
         const size = box.getSize(new THREE.Vector3());
 
-        humanModel.position.set(-center.x, -center.y, -center.z);
+        // Модельді өз ортасына қою
+        humanModel.position.sub(center);
 
         const maxDim = Math.max(size.x, size.y, size.z);
         const scale = 3.0 / maxDim;
@@ -838,11 +839,8 @@ function initHuman3D() {
 
         humanGroup.add(humanModel);
 
-        // Бүкіл топты (модель мен нүктелерді) төмен түсіру
-        humanGroup.position.y = -1.8; 
-
-        // Камераны да сол жерге бағыттау
-        humanCamera.lookAt(0, -1.8, 0); 
+        // Камераны дәл модельдің ортасына бағыттау (модель қайда болса да, экран ортасында көрінеді)
+        humanCamera.lookAt(0, 0, 0);
 
         createHumanDots();
         addHumanPulses();
