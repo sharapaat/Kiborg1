@@ -136,6 +136,7 @@ document.querySelectorAll('.side-link').forEach(link => {
       safety: ['ҚАУІПСІЗДІК', 'Артықшылықтар мен шектеулер'],
       future: ['БОЛАШАҚ', 'Келесі онжылдықтар болжамы'],
       survey: ['САУАЛНАМА', 'Өз көзқарасыңызды білдіріңіз'],
+      neuroimplant: ['НЕЙРОИМПЛАНТ', 'Киборг технологиясының жаңа буыны'],
       authors: ['АВТОРЛАР', 'Жоба авторлары мен жетекшісі']
     };
     const [t, s] = titles[section] || ['', ''];
@@ -1056,6 +1057,31 @@ function submitSurvey() {
   document.getElementById('resultText').textContent = feedback + ' Қатысқаныңызға рахмет!';
   result.classList.add('show');
 }
+/* ============================================================
+   НЕЙРОИМПЛАНТ СУРЕТТЕРІН ҮЛКЕЙТУ
+============================================================ */
+function openImageModal(src, title) {
+  const modal = document.getElementById('imageModal');
+  const img = document.getElementById('imageModalImg');
+  const modalTitle = document.getElementById('imageModalTitle');
+  
+  img.src = src;
+  modalTitle.textContent = title;
+  
+  modal.classList.remove('hidden');
+  document.body.style.overflow = 'hidden'; // Артқы фонды бұғаттау
+}
+
+function closeImageModal() {
+  const modal = document.getElementById('imageModal');
+  modal.classList.add('hidden');
+  document.body.style.overflow = ''; // Фонды қалпына келтіру
+}
+
+// Модальді терезенің сыртын басқанда жабу
+document.getElementById('imageModal')?.addEventListener('click', (e) => {
+  if (e.target.id === 'imageModal') closeImageModal();
+});
 
 /* ============================================================
    STARTUP
