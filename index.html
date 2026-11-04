@@ -139,6 +139,10 @@
         <span class="side-icon">📝</span>
         <span class="side-label">Сауалнама</span>
       </button>
+            <button class="side-link" data-section="neuroimplant">
+        <span class="side-icon">🧠</span>
+        <span class="side-label">Нейроимплант</span>
+      </button>
       <button class="side-link" data-section="authors">
         <span class="side-icon">👥</span>
         <span class="side-label">Авторлар</span>
@@ -415,8 +419,39 @@
         </div>
       </div>
     </section>
+         <!-- Section: НЕЙРОИМПЛАНТ -->
+    <section class="lab-section" id="section-neuroimplant">
+      <div class="section-content">
+        <div class="neuro-gallery">
+          
+          <div class="neuro-card" onclick="openImageModal('naz.jpg', 'NeuroLink-2026: Жалпы шолу')">
+            <img src="naz.jpg" alt="NeuroLink-2026">
+            <div class="neuro-card-title">NeuroLink-2026 (Шолу)</div>
+          </div>
+
+          <div class="neuro-card" onclick="openImageModal('naz1.jpg', 'NeuroLink-2026: Құрылымы мен мүмкіндіктері')">
+            <img src="naz1.jpg" alt="NeuroLink-2026 Құрылымы">
+            <div class="neuro-card-title">Құрылымы мен мүмкіндіктері</div>
+          </div>
+
+          <div class="neuro-card" onclick="openImageModal('naz2.jpg', 'Киборг технологиясы: Имплант түрлері')">
+            <img src="naz2.jpg" alt="Имплант түрлері">
+            <div class="neuro-card-title">Имплант түрлері (3D)</div>
+          </div>
+
+          <div class="neuro-card" onclick="openImageModal('naz3.jpg', 'Импланттың 3D моделі (PVC Edition)')">
+            <img src="naz3.jpg" alt="3D Модель">
+            <div class="neuro-card-title">Имплант 3D моделі</div>
+          </div>
+
+          <!-- naz5.jpg блогы өшірілді -->
+
+        </div>
+      </div>
+    </section>
 
     <!-- Section: САУАЛНАМА -->
+
     <section class="lab-section" id="section-survey">
       <div class="section-content">
         <div class="survey-box">
@@ -497,6 +532,14 @@
       <hr>
       <p><strong>Мақсат:</strong> Жасанды жүйелер мен нейроинтерфейстер арқылы адамның сезім мүшелерін алмастыру мүмкіндіктерін зерттеу және қоғамның бұл технологияға деген көзқарасын анықтау.</p>
     </div>
+  </div>
+</div>
+<!-- Суретті үлкейту модальді терезесі -->
+<div class="modal-overlay hidden" id="imageModal">
+  <div class="image-modal-box">
+    <button class="modal-close" onclick="closeImageModal()">✕</button>
+    <h2 id="imageModalTitle" style="margin-bottom: 15px; text-align: center; color: #fff;">Атауы</h2>
+    <img id="imageModalImg" src="" alt="Үлкейтілген сурет" style="width: 100%; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
   </div>
 </div>
 
