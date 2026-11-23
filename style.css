@@ -1574,3 +1574,629 @@ body { overflow-x: hidden; }
     height: 180px;
   }
 }
+/* ============ НЕЙРОИМПЛАНТ ЖАҢА ДИЗАЙНЫ ============ */
+.neuro-header-card {
+  background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+  color: #fff;
+  padding: 30px;
+  border-radius: 20px;
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  box-shadow: var(--shadow-lg);
+}
+
+.neuro-header-text h2 {
+  font-size: 2.2rem;
+  color: #00e5ff;
+  margin-bottom: 5px;
+}
+
+.neuro-header-text h4 {
+  font-size: 1.1rem;
+  margin-bottom: 15px;
+  color: #e2e8f0;
+  font-weight: 500;
+}
+
+.neuro-header-text p {
+  max-width: 600px;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #cbd5e1;
+}
+
+.neuro-header-quote {
+  background: rgba(0, 229, 255, 0.1);
+  border-left: 4px solid #00e5ff;
+  padding: 15px 20px;
+  border-radius: 10px;
+  font-style: italic;
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #00e5ff;
+}
+
+.neuro-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.neuro-info-box {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+.neuro-info-box h3 {
+  font-size: 1.1rem;
+  color: var(--primary);
+  margin-bottom: 15px;
+  border-bottom: 2px solid var(--gradient-soft);
+  padding-bottom: 10px;
+}
+
+.neuro-list {
+  list-style: none;
+  padding: 0;
+}
+
+.neuro-list li {
+  padding: 10px 0;
+  border-bottom: 1px dashed var(--border);
+  font-size: 0.95rem;
+  color: var(--text);
+}
+
+.neuro-list li:last-child {
+  border-bottom: none;
+}
+
+/* Диаграмма стилі */
+.neuro-chart-box {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+.neuro-chart-box h3 {
+  font-size: 1.1rem;
+  color: var(--primary);
+  margin-bottom: 20px;
+}
+
+.neuro-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.neuro-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.bar-label {
+  width: 150px;
+  font-weight: 600;
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+.bar-track {
+  flex: 1;
+  display: flex;
+  height: 30px;
+  background: #f1f5f9;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: bold;
+  transition: width 1s ease-in-out;
+}
+
+.bar-fill.before {
+  background: #94a3b8;
+}
+
+.bar-fill.after {
+  background: var(--primary);
+}
+
+/* Психологиялық статистика тізімі */
+.neuro-stats-list {
+  list-style: none;
+  padding: 0;
+}
+
+.neuro-stats-list li {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.95rem;
+}
+
+.neuro-stats-list li strong {
+  color: #059669;
+  font-size: 1rem;
+}
+
+.neuro-stats-list li strong.danger-text {
+  color: #dc2626; /* Депрессия мен стресс төмендегенін көрсету үшін */
+}
+
+/* Қорытынды блок */
+.neuro-conclusion {
+  background: var(--gradient-soft);
+  border-left: 5px solid var(--primary);
+  padding: 24px;
+  border-radius: 16px;
+  margin-bottom: 24px;
+}
+
+.neuro-conclusion h3 {
+  color: var(--primary);
+  margin-bottom: 10px;
+}
+
+.neuro-conclusion p {
+  color: var(--text);
+  line-height: 1.7;
+  font-size: 0.95rem;
+}
+
+/* Мобильге арналған түзету */
+@media (max-width: 900px) {
+  .neuro-grid-2 {
+    grid-template-columns: 1fr;
+  }
+  .neuro-header-card {
+    flex-direction: column;
+    text-align: center;
+  }
+  .neuro-header-quote {
+    border-left: none;
+    border-top: 4px solid #00e5ff;
+    text-align: center;
+  }
+  .bar-track {
+    flex-direction: column;
+    height: auto;
+  }
+  .bar-fill {
+    width: 100% !important;
+    padding: 5px 0;
+  }
+  .bar-label {
+    width: 100%;
+    margin-bottom: 5px;
+  }
+  .neuro-bar-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+/* ============ НЕЙРОИМПЛАНТ: ПСИХОЛОГИЯ, РЕЗУЛЬТАТ, ДОНАТ ============ */
+
+/* Психологиялық тор */
+.neuro-psych-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.psych-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: #f8fafc;
+  border-radius: 10px;
+  border-left: 4px solid var(--primary);
+  transition: 0.3s;
+}
+
+.psych-item:hover {
+  background: var(--gradient-soft);
+  transform: translateX(5px);
+}
+
+.psych-label {
+  font-weight: 700;
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+.psych-values {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.psych-values .before {
+  color: #94a3b8;
+}
+
+.psych-values .after {
+  color: var(--primary);
+  font-size: 1.1rem;
+}
+
+.psych-delta {
+  background: #d1fae5;
+  color: #059669;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  margin-left: 5px;
+}
+
+.psych-delta.down {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+/* Нәтиже блогы */
+.neuro-result-block {
+  background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+  color: #fff;
+  padding: 28px;
+  border-radius: 20px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-lg);
+}
+
+.neuro-result-block h3 {
+  color: #00e5ff;
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+}
+
+.result-quote {
+  background: rgba(0, 229, 255, 0.1);
+  border-left: 4px solid #00e5ff;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-style: italic;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #00e5ff;
+}
+
+.result-list {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.result-list li {
+  position: relative;
+  padding-left: 28px;
+  font-size: 0.95rem;
+  color: #e2e8f0;
+}
+
+.result-list li::before {
+  content: '✔';
+  position: absolute;
+  left: 0;
+  color: #00e5ff;
+  font-weight: 900;
+}
+
+/* Донат диаграмма */
+.neuro-donut-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 24px;
+  justify-items: center;
+}
+
+.donut-item {
+  text-align: center;
+}
+
+.donut {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: conic-gradient(var(--primary) calc(var(--percent) * 1%), #e2e8f0 0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin-bottom: 10px;
+  box-shadow: var(--shadow-sm);
+}
+
+.donut::before {
+  content: '';
+  position: absolute;
+  inset: 12px;
+  background: #fff;
+  border-radius: 50%;
+}
+
+.donut span {
+  position: relative;
+  z-index: 1;
+  font-weight: 900;
+  font-size: 1.2rem;
+  color: var(--primary);
+}
+
+.donut-item p {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  font-weight: 600;
+}
+
+/* Ұсыныстар */
+.neuro-recommendations {
+  background: var(--gradient-soft);
+  border-left: 5px solid var(--primary);
+  padding: 24px;
+  border-radius: 16px;
+  margin-bottom: 24px;
+}
+
+.neuro-recommendations h3 {
+  color: var(--primary);
+  margin-bottom: 15px;
+}
+
+.neuro-recommendations ul {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.neuro-recommendations li {
+  position: relative;
+  padding-left: 28px;
+  font-size: 0.95rem;
+  color: var(--text);
+}
+
+.neuro-recommendations li::before {
+  content: '★';
+  position: absolute;
+  left: 0;
+  color: var(--primary);
+  font-weight: 900;
+}
+
+/* Мобильді нұсқа */
+@media (max-width: 900px) {
+  .result-list,
+  .neuro-recommendations ul {
+    grid-template-columns: 1fr;
+  }
+  .neuro-donut-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+/* ============ НЕЙРОИМПЛАНТ ҚОСЫМША БЛОКТАРЫ (Сурет, Кесте, Галерея) ============ */
+
+/* 10. Құрылғының сипаттамасы */
+.neuro-device-showcase {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 24px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-sm);
+  align-items: center;
+}
+
+.device-image-box {
+  text-align: center;
+}
+
+.device-image-box img {
+  width: 100%;
+  max-height: 300px;
+  object-fit: contain;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.3s, box-shadow 0.3s;
+  background: #f8fafc;
+  padding: 10px;
+  border: 1px solid var(--border);
+}
+
+.device-image-box img:hover {
+  transform: scale(1.03);
+  box-shadow: var(--shadow-lg);
+}
+
+.img-caption {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  margin-top: 10px;
+  font-style: italic;
+}
+
+.device-info-box h3 {
+  color: var(--primary);
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+  border-bottom: 2px solid var(--gradient-soft);
+  padding-bottom: 10px;
+}
+
+.device-specs {
+  list-style: none;
+  padding: 0;
+}
+
+.device-specs li {
+  padding: 8px 0;
+  border-bottom: 1px dashed var(--border);
+  font-size: 0.95rem;
+  color: var(--text);
+}
+
+.device-specs li:last-child {
+  border-bottom: none;
+}
+
+/* 11. Бюджет кестесі */
+.neuro-budget-box {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+.neuro-budget-box h3 {
+  color: var(--primary);
+  margin-bottom: 20px;
+  font-size: 1.1rem;
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+.budget-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.budget-table th {
+  background: #1e293b;
+  color: #fff;
+  padding: 12px;
+  text-align: left;
+  font-weight: 600;
+}
+
+.budget-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+}
+
+.budget-table tbody tr:nth-child(even) {
+  background: #f8fafc;
+}
+
+.budget-table tbody tr:hover {
+  background: var(--gradient-soft);
+}
+
+.budget-table td:last-child {
+  font-weight: 700;
+  color: var(--primary);
+  text-align: right;
+}
+
+.table-subtotal td {
+  background: #e2e8f0 !important;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.table-total td {
+  background: var(--primary) !important;
+  color: #fff !important;
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+
+/* 4 СУРЕТКЕ АРНАЛҒАН ТОР (2x2) */
+.neuro-photo-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-top: 20px;
+  margin-bottom: 24px;
+}
+
+.photo-item {
+  text-align: center;
+  background: #f8fafc;
+  padding: 10px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.photo-item img {
+  width: 100%;
+  height: 300px; /* Биіктігін бекітеміз */
+  object-fit: contain; /* СУРЕТТІҢ ТОЛЫҚ КӨРІНУІ ҮШІН (қиылмайды) */
+  border-radius: 8px;
+  display: block;
+  background: #fff; /* Суреттің арты ақ болып тұрады */
+}
+
+/* 3-ші суретті 180 градусқа бұру үшін */
+.rotate-180 {
+  transform: rotate(180deg);
+}
+
+.photo-item p {
+  margin-top: 15px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* Телефонға арналған нұсқа */
+@media (max-width: 900px) {
+  .neuro-photo-grid {
+    grid-template-columns: 1fr;
+  }
+  .photo-item img {
+    height: auto;
+  }
+}
+/* Модаль терезесіндегі суреттің стилі */
+#imageModalImg {
+  max-width: 100%;
+  max-height: 80vh; /* Экран биіктігінің 80%-ынан аспайды */
+  object-fit: contain;
+  transition: transform 0.3s;
+}
+
+/* Модальде суретті айналдыру үшін */
+#imageModalImg.rotate-180 {
+  transform: rotate(180deg);
+}
